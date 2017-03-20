@@ -33,88 +33,57 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <!-- Read More + bottom content (view in browser link, license, last updated) -->
+                <!-- Bottom content (view in browser link, license, last updated) -->
                 <LinearLayout
                     android:id="@+id/bottom_content_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="-400dp"
+                    android:paddingBottom="16dp"
                     android:layout_gravity="bottom"
                     android:orientation="vertical"
+                    android:background="?attr/subtle_gray_color"
                     android:visibility="gone">
 
-                    <!-- Read more -->
-                    <LinearLayout
-                        android:id="@+id/read_more_container"
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:background="@drawable/toolbar_bottom_shadow"/>
+
+                    <TextView
+                        android:id="@+id/page_external_link"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingTop="@dimen/list_item_vertical_padding"
-                        android:paddingBottom="@dimen/list_item_vertical_padding"
-                        android:visibility="gone">
-                        <org.wikipedia.views.ConfigurableTextView
-                            android:id="@+id/read_more_header"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="?android:attr/textAppearanceLarge"
-                            android:paddingRight="@dimen/list_item_horizontal_padding"
-                            android:paddingBottom="16dp"
-                            android:paddingLeft="@dimen/list_item_horizontal_padding"
-                            android:fontFamily="serif"
-                            android:textSize="24sp"
-                            android:text="@string/read_more_section" />
-                        <org.wikipedia.views.ConfigurableListView
-                            android:id="@+id/read_more_list"
-                            android:layout_width="match_parent"
-                            android:layout_height="0dp" />
-                    </LinearLayout>
-
-                    <!-- Bottom content (view in browser link, license, last updated) -->
-                    <LinearLayout
+                        android:paddingTop="8dp"
+                        android:paddingLeft="@dimen/activity_horizontal_margin"
+                        android:paddingRight="@dimen/activity_horizontal_margin"
+                        style="?android:textAppearanceSmall"
+                        android:text="@string/page_view_in_browser"
+                        android:textColor="?attr/link_color"
+                        android:gravity="center"/>
+                    <TextView
+                        android:id="@+id/page_last_updated_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:paddingTop="8dp"
+                        android:paddingLeft="@dimen/activity_horizontal_margin"
+                        android:paddingRight="@dimen/activity_horizontal_margin"
+                        style="?android:textAppearanceSmall"
+                        android:textIsSelectable="true"
+                        android:textColorLink="?attr/link_color"/>
+                    <TextView
+                        android:id="@+id/page_license_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingBottom="16dp"
-                        android:background="?attr/subtle_gray_color">
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="8dp"
-                            android:background="@drawable/toolbar_bottom_shadow"/>
+                        android:paddingTop="8dp"
+                        android:paddingLeft="@dimen/activity_horizontal_margin"
+                        android:paddingRight="@dimen/activity_horizontal_margin"
+                        style="?android:textAppearanceSmall"
+                        android:textIsSelectable="true"
+                        android:textColorLink="?attr/link_color"
+                        android:gravity="center"/>
 
-                        <TextView
-                            android:id="@+id/page_external_link"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="8dp"
-                            android:paddingLeft="@dimen/activity_horizontal_margin"
-                            android:paddingRight="@dimen/activity_horizontal_margin"
-                            style="?android:textAppearanceSmall"
-                            android:text="@string/page_view_in_browser"
-                            android:textColor="?attr/link_color"
-                            android:gravity="center"/>
-                        <TextView
-                            android:id="@+id/page_last_updated_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:paddingTop="8dp"
-                            android:paddingLeft="@dimen/activity_horizontal_margin"
-                            android:paddingRight="@dimen/activity_horizontal_margin"
-                            style="?android:textAppearanceSmall"
-                            android:textIsSelectable="true"
-                            android:textColorLink="?attr/link_color"/>
-                        <TextView
-                            android:id="@+id/page_license_text"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:paddingTop="8dp"
-                            android:paddingLeft="@dimen/activity_horizontal_margin"
-                            android:paddingRight="@dimen/activity_horizontal_margin"
-                            style="?android:textAppearanceSmall"
-                            android:textIsSelectable="true"
-                            android:textColorLink="?attr/link_color"
-                            android:gravity="center"/>
-                    </LinearLayout>
                 </LinearLayout>
 
                 <org.wikipedia.page.ArticleTabLayout

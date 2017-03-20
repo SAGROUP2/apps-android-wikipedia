@@ -55,7 +55,6 @@ import static org.wikipedia.util.UriUtil.visitInExternalBrowser;
 public class BottomContentHandler implements BottomContentInterface,
                                                 ObservableWebView.OnScrollChangeListener,
                                                 ObservableWebView.OnContentHeightChangedListener {
-    private static final String TAG = "BottomContentHandler";
 
     private final PageFragment parentFragment;
     private final CommunicationBridge bridge;
@@ -63,16 +62,10 @@ public class BottomContentHandler implements BottomContentInterface,
     private final LinkHandler linkHandler;
     private PageTitle pageTitle;
     private final WikipediaApp app;
-    private boolean firstTimeShown = false;
 
     private View bottomContentContainer;
     private TextView pageLastUpdatedText;
     private TextView pageLicenseText;
-    private View readMoreContainer;
-    private ConfigurableListView readMoreList;
-
-    private SuggestedPagesFunnel funnel;
-    private SearchResults readMoreItems;
 
     public BottomContentHandler(final PageFragment parentFragment,
                                 CommunicationBridge bridge, ObservableWebView webview,
@@ -89,8 +82,6 @@ public class BottomContentHandler implements BottomContentInterface,
 
         pageLastUpdatedText = (TextView) bottomContentContainer.findViewById(R.id.page_last_updated_text);
         pageLicenseText = (TextView) bottomContentContainer.findViewById(R.id.page_license_text);
-        readMoreContainer = bottomContentContainer.findViewById(R.id.read_more_container);
-        readMoreList = (ConfigurableListView) bottomContentContainer.findViewById(R.id.read_more_list);
 
         TextView pageExternalLink = (TextView) bottomContentContainer.findViewById(R.id.page_external_link);
         pageExternalLink.setPaintFlags(pageExternalLink.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -98,66 +89,6 @@ public class BottomContentHandler implements BottomContentInterface,
             @Override
             public void onClick(View v) {
                 visitInExternalBrowser(parentFragment.getContext(), Uri.parse(pageTitle.getMobileUri()));
-            }
-        });
-
-        if (parentFragment.callback() != null) {
-            ListViewContextMenuListener contextMenuListener
-                    = new LongPressHandler(parentFragment.callback());
-
-            new org.wikipedia.LongPressHandler(readMoreList, HistoryEntry.SOURCE_INTERNAL_LINK,
-                    contextMenuListener);
-        }
-
-        // set up pass-through scroll functionality for the ListView
-        readMoreList.setOnTouchListener(new View.OnTouchListener() {
-            private int touchSlop = ViewConfiguration.get(readMoreList.getContext())
-                                                     .getScaledTouchSlop();
-            private boolean slopReached;
-            private boolean doingSlopEvent;
-            private boolean isPressed = false;
-            private float startY;
-            private float amountScrolled;
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                int action = event.getActionMasked() & MotionEvent.ACTION_MASK;
-                switch (action) {
-                    case MotionEvent.ACTION_DOWN:
-                        isPressed = true;
-                        startY = event.getY();
-                        amountScrolled = 0;
-                        slopReached = false;
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        if (isPressed && !doingSlopEvent) {
-                            int contentHeight = (int)(webView.getContentHeight() * DimenUtil.getDensityScalar());
-                            int maxScroll = contentHeight - webView.getScrollY()
-                                            - webView.getHeight();
-                            int scrollAmount = Math.min((int) (startY - event.getY()), maxScroll);
-                            // manually scroll the WebView that's underneath us...
-                            webView.scrollBy(0, scrollAmount);
-                            amountScrolled += scrollAmount;
-                            if (Math.abs(amountScrolled) > touchSlop && !slopReached) {
-                                slopReached = true;
-                                // send an artificial Move event that scrolls it by an amount
-                                // that's greater than the touch slop, so that the currently
-                                // highlighted item is unselected.
-                                MotionEvent moveEvent = MotionEvent.obtain(event);
-                                moveEvent.setLocation(event.getX(), event.getY() + touchSlop * 2);
-                                doingSlopEvent = true;
-                                readMoreList.dispatchTouchEvent(moveEvent);
-                                doingSlopEvent = false;
-                            }
-                        }
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        isPressed = false;
-                        break;
-                    default:
-                        break;
-                }
-                return false;
             }
         });
 
@@ -188,10 +119,6 @@ public class BottomContentHandler implements BottomContentInterface,
             if (bottomContentContainer.getVisibility() != View.VISIBLE) {
                 bottomContentContainer.setVisibility(View.VISIBLE);
             }
-            if (!firstTimeShown && readMoreItems != null) {
-                firstTimeShown = true;
-                funnel.logSuggestionsShown(pageTitle, readMoreItems.getResults());
-            }
         }
     }
 
@@ -215,14 +142,8 @@ public class BottomContentHandler implements BottomContentInterface,
 
     @Override
     public void beginLayout() {
-        firstTimeShown = false;
         setupAttribution();
-        if (parentFragment.getPage().couldHaveReadMoreSection()) {
-            preRequestReadMoreItems(parentFragment.getActivity().getLayoutInflater());
-        } else {
-            bottomContentContainer.findViewById(R.id.read_more_container).setVisibility(View.GONE);
-            layoutContent();
-        }
+        layoutContent();
     }
 
     private void layoutContent() {
@@ -242,17 +163,6 @@ public class BottomContentHandler implements BottomContentInterface,
             return;
         }
 
-        // calculate the height of the listview, based on the number of items inside it.
-        ListAdapter adapter = readMoreList.getAdapter();
-        if (adapter != null && adapter.getCount() > 0) {
-            View item = View.inflate(readMoreList.getContext(), R.layout.item_page_list_entry, null);
-            item.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            ViewGroup.LayoutParams params = readMoreList.getLayoutParams();
-            params.height = adapter.getCount() * item.getMeasuredHeight();
-            readMoreList.setLayoutParams(params);
-        }
-
-        readMoreList.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         bottomContentContainer.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 
         // pad the bottom of the webview, to make room for ourselves
@@ -294,75 +204,6 @@ public class BottomContentHandler implements BottomContentInterface,
         }
     }
 
-    private void preRequestReadMoreItems(final LayoutInflater layoutInflater) {
-        if (parentFragment.getPage().isMainPage()) {
-            new MainPageReadMoreTopicTask(app) {
-                @Override
-                public void onFinish(HistoryEntry entry) {
-                    requestReadMoreItems(layoutInflater, entry);
-                }
-
-                @Override
-                public void onCatch(Throwable caught) {
-                    // Read More titles are expendable.
-                    Log.w(TAG, "Error while getting Read More topic for main page.", caught);
-                    // but lay out the bottom content anyway:
-                    layoutContent();
-                }
-            }.execute();
-        } else {
-            requestReadMoreItems(layoutInflater, new HistoryEntry(pageTitle, HistoryEntry.SOURCE_INTERNAL_LINK));
-        }
-    }
-
-    private void requestReadMoreItems(final LayoutInflater layoutInflater,
-                                      final HistoryEntry entry) {
-        if (entry == null || TextUtils.isEmpty(entry.getTitle().getPrefixedText())) {
-            hideReadMore();
-            layoutContent();
-            return;
-        }
-        final long timeMillis = System.currentTimeMillis();
-        new SuggestionsTask(app.getAPIForSite(entry.getTitle().getWikiSite()),
-                entry.getTitle().getWikiSite(), entry.getTitle().getPrefixedText(), false) {
-            @Override
-            public void onFinish(SearchResults results) {
-                funnel.setLatency(System.currentTimeMillis() - timeMillis);
-                readMoreItems = results;
-                if (!readMoreItems.getResults().isEmpty()) {
-                    // If there are results, set up section and make sure it's visible
-                    setUpReadMoreSection(layoutInflater, readMoreItems);
-                    showReadMore();
-                } else {
-                    // If there's no results, just hide the section
-                    hideReadMore();
-                }
-                layoutContent();
-            }
-
-            @Override
-            public void onCatch(Throwable caught) {
-                // Read More titles are expendable.
-                Log.w(TAG, "Error while fetching Read More titles.", caught);
-                // but lay out the bottom content anyway:
-                layoutContent();
-            }
-        }.execute();
-    }
-
-    private void hideReadMore() {
-        readMoreContainer.setVisibility(View.GONE);
-    }
-
-    private void showReadMore() {
-        if (parentFragment.isAdded()) {
-            ((ConfigurableTextView) readMoreContainer.findViewById(R.id.read_more_header))
-                    .setText(getStringForArticleLanguage(parentFragment.getTitle(), R.string.read_more_section),
-                                     pageTitle.getWikiSite().languageCode());
-        }
-        readMoreContainer.setVisibility(View.VISIBLE);
-    }
-
     @Override
     public PageTitle getTitle() {
         return pageTitle;
@@ -371,88 +212,5 @@ public class BottomContentHandler implements BottomContentInterface,
     @Override
     public void setTitle(PageTitle newTitle) {
         pageTitle = newTitle;
-        funnel = new SuggestedPagesFunnel(app);
-    }
-
-    private void setUpReadMoreSection(LayoutInflater layoutInflater, final SearchResults results) {
-        final ReadMoreAdapter adapter = new ReadMoreAdapter(layoutInflater, results.getResults());
-        readMoreList.setAdapter(adapter, pageTitle.getWikiSite().languageCode());
-        readMoreList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                PageTitle title = adapter.getItem(position).getPageTitle();
-                HistoryEntry historyEntry = new HistoryEntry(title, HistoryEntry.SOURCE_INTERNAL_LINK);
-                parentFragment.loadPage(title, historyEntry);
-                funnel.logSuggestionClicked(pageTitle, results.getResults(), position);
-            }
-        });
-        adapter.notifyDataSetChanged();
-    }
-
-    private class LongPressHandler extends PageContainerLongPressHandler
-            implements ListViewContextMenuListener {
-        private int lastPosition;
-        LongPressHandler(@NonNull PageFragment.Callback callback) {
-            super(callback);
-        }
-
-        @Override
-        public PageTitle getTitleForListPosition(int position) {
-            lastPosition = position;
-            return ((SearchResult) readMoreList.getAdapter().getItem(position)).getPageTitle();
-        }
-
-        @Override
-        public void onOpenLink(PageTitle title, HistoryEntry entry) {
-            super.onOpenLink(title, entry);
-            funnel.logSuggestionClicked(pageTitle, readMoreItems.getResults(), lastPosition);
-        }
-
-        @Override
-        public void onOpenInNewTab(PageTitle title, HistoryEntry entry) {
-            super.onOpenInNewTab(title, entry);
-            funnel.logSuggestionClicked(pageTitle, readMoreItems.getResults(), lastPosition);
-        }
-    }
-
-    private final class ReadMoreAdapter extends BaseAdapter {
-        private final LayoutInflater inflater;
-        private final List<SearchResult> results;
-
-        private ReadMoreAdapter(LayoutInflater inflater, List<SearchResult> results) {
-            this.inflater = inflater;
-            this.results = results;
-        }
-
-        @Override
-        public int getCount() {
-            return results == null ? 0 : results.size();
-        }
-
-        @Override
-        public SearchResult getItem(int position) {
-            return results.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = inflater.inflate(R.layout.item_page_list_entry, parent, false);
-            }
-            TextView pageTitleText = (TextView) convertView.findViewById(R.id.page_list_item_title);
-            SearchResult result = getItem(position);
-            pageTitleText.setText(result.getPageTitle().getDisplayText());
-
-            GoneIfEmptyTextView descriptionText = (GoneIfEmptyTextView) convertView.findViewById(R.id.page_list_item_description);
-            descriptionText.setText(StringUtils.capitalize(result.getPageTitle().getDescription()));
-
-            ViewUtil.loadImageUrlInto((SimpleDraweeView) convertView.findViewById(R.id.page_list_item_image), result.getPageTitle().getThumbUrl());
-            return convertView;
-        }
     }
 }
