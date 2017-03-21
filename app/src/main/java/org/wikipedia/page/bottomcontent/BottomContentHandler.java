@@ -2,53 +2,28 @@ package org.wikipedia.page.bottomcontent;
 
 import android.graphics.Paint;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
-import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
-
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.wikipedia.LongPressHandler.ListViewContextMenuListener;
 import org.wikipedia.R;
 import org.wikipedia.WikipediaApp;
 import org.wikipedia.bridge.CommunicationBridge;
-import org.wikipedia.history.HistoryEntry;
 import org.wikipedia.page.LinkHandler;
 import org.wikipedia.page.LinkMovementMethodExt;
 import org.wikipedia.page.Page;
-import org.wikipedia.page.PageContainerLongPressHandler;
 import org.wikipedia.page.PageFragment;
 import org.wikipedia.page.PageTitle;
-import org.wikipedia.page.SuggestionsTask;
-import org.wikipedia.search.SearchResult;
-import org.wikipedia.search.SearchResults;
 import org.wikipedia.util.DimenUtil;
 import org.wikipedia.util.StringUtil;
-import org.wikipedia.views.ConfigurableListView;
-import org.wikipedia.views.ConfigurableTextView;
-import org.wikipedia.views.GoneIfEmptyTextView;
 import org.wikipedia.views.ObservableWebView;
-import org.wikipedia.views.ViewUtil;
-
-import java.util.List;
 
 import static org.wikipedia.util.L10nUtil.formatDateRelative;
-import static org.wikipedia.util.L10nUtil.getStringForArticleLanguage;
 import static org.wikipedia.util.UriUtil.visitInExternalBrowser;
 
 public class BottomContentHandler implements BottomContentInterface,

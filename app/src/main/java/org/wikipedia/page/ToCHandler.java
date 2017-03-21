@@ -39,7 +39,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import static org.wikipedia.util.DimenUtil.getContentTopOffsetPx;
-import static org.wikipedia.util.L10nUtil.getStringForArticleLanguage;
 import static org.wikipedia.util.ResourceUtil.getThemedAttributeId;
 
 public class ToCHandler {
