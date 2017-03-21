@@ -45,7 +45,6 @@ import static org.wikipedia.util.ResourceUtil.getThemedAttributeId;
 public class ToCHandler {
     private static final int MAX_LEVELS = 3;
     private static final int INDENTATION_WIDTH_DP = 16;
-    private static final int READ_MORE_SECTION_ID = -1;
     private final ConfigurableListView tocList;
     private final ProgressBar tocProgress;
     private final CommunicationBridge bridge;
@@ -155,13 +154,7 @@ public class ToCHandler {
 
     public void scrollToSection(Section section) {
         if (section != null) {
-            // is it the bottom (read more) section?
-            if (section.getId() == READ_MORE_SECTION_ID) {
-                bridge.sendMessage("scrollToBottom", new JSONObject());
-            } else {
-                scrollToSection(
-                        section.isLead() ? "heading_" + section.getId() : section.getAnchor());
-            }
+            scrollToSection(section.isLead() ? "heading_" + section.getId() : section.getAnchor());
         }
     }
 
