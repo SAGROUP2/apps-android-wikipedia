@@ -21,6 +21,13 @@
             android:summary="@string/preference_summary_show_link_previews"
             />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Selected cards">
+        <CheckBoxPreference
+            android:key="@string/preference_key_show_card_news"
+            android:title="show_card_news">
+        </CheckBoxPreference>
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/preferences_privacy_settings_heading">
         <SwitchPreferenceCompat
             android:key="@string/preference_key_eventlogging_opt_in"

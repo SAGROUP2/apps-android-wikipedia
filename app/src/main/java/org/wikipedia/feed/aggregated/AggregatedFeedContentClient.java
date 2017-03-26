@@ -87,7 +87,7 @@ public class AggregatedFeedContentClient implements FeedClient {
             List<Card> cards = new ArrayList<>();
             AggregatedFeedContent content = response.body();
             // todo: remove age check when news endpoint provides dated content, T139481.
-            if (age == 0 && content.news() != null) {
+            if (age == 0 && content.news() != null && Prefs.isNewsCardEnabled()) {
                 cards.add(new NewsListCard(content.news(), age, wiki));
             }
             if (content.tfa() != null) {

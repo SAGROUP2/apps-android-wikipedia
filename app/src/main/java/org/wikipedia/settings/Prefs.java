@@ -450,6 +450,10 @@ public final class Prefs {
         return getBoolean(R.string.preference_key_show_images, true);
     }
 
+    public static boolean isNewsCardEnabled() {
+        return getBoolean(R.string.preference_key_show_card_news, true);
+    }
+
     public static String getEditTokenForWikiKey(String wiki) {
         return getKey(R.string.preference_key_edittoken_for_wiki_format, wiki);
     }
