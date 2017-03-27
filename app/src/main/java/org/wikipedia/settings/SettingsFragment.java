@@ -63,4 +63,9 @@ public class SettingsFragment extends PreferenceLoaderFragment {
     private void invalidateOptionsMenu() {
         getActivity().supportInvalidateOptionsMenu();
     }
+
+    @Override
+    public void onCreatePreferences(Bundle bundle, String rootKey) {
+        setPreferencesFromResource(R.xml.preferences, rootKey);
+    }
 }
