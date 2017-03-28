@@ -102,10 +102,7 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                funnel.refresh(coordinator.getAge());
-                coordinator.reset();
-                feedAdapter.notifyDataSetChanged();
-                coordinator.more(app.getWikiSite());
+                refreshLayout();
             }
         });
 
@@ -320,7 +317,12 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
             }
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-            return preferences.edit().putBoolean(getString(keyResource), false).commit();
+            if (preferences.edit().putBoolean(getString(keyResource), false).commit()) {
+                refreshLayout();
+                return true;
+            }
+
+            return false;
         }
 
         @Override
@@ -432,5 +434,13 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
             WikipediaApp.getInstance().logOut();
             FeedbackUtil.showMessage(FeedFragment.this, R.string.toast_logout_complete);
         }
+    }
+
+    private void refreshLayout()
+    {
+        funnel.refresh(coordinator.getAge());
+        coordinator.reset();
+        feedAdapter.notifyDataSetChanged();
+        coordinator.more(app.getWikiSite());
     }
 }
