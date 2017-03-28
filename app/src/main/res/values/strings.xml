@@ -256,6 +256,15 @@
     <string name="error_webview_updating">The Android System WebView is currently being updated. Please try again in a moment.</string>
     <string name="multi_select_items_selected">%d selected</string>
 
+    <!-- Cards to display -->
+    <string name="preference_title_cards_to_display">Cards to display</string>
+    <string name="preference_title_show_news_cards">News</string>
+    <string name="preference_title_show_featured_article_cards">Featured articles</string>
+    <string name="preference_title_show_most_read_cards">Trending</string>
+    <string name="preference_title_show_featured_image_cards">Picture of the day</string>
+    <string name="preference_description_cards_filtering">Select which cards to display on main page</string>
+    <!-- /Cards to display -->
+
     <!-- Crash reporter -->
     <string name="crash_report_dialog_title">Sorry, app crashed last time</string>
     <string name="crash_report_dialog_text">Would you like to send a crash report to HockeyApp / a third-party service provider so that Wikimedia can review your crash and fix the bug that caused it?</string>
@@ -346,6 +355,7 @@
     <string name="view_featured_image_card_download">Download</string>
     <string name="menu_feed_card_dismiss">Hide this card</string>
     <string name="menu_feed_card_dismissed">Card hidden.</string>
+    <string name="menu_feed_card_hide_all">Hide all cards of this type</string>
     <string name="menu_feed_overflow_label">More options</string>
 
     <string name="feed_featured_image_share_subject">Featured image from Wikimedia Commons</string>

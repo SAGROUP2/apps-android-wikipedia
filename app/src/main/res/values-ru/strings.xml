@@ -308,6 +308,7 @@
   <string name="view_featured_image_card_download">Загрузить</string>
   <string name="menu_feed_card_dismiss">Скрыть эту карточку</string>
   <string name="menu_feed_card_dismissed">Карточка скрыта.</string>
+  <string name="menu_feed_card_hide_all">Скрыть все карточки этого типа</string>
   <string name="menu_feed_overflow_label">Больше настроек</string>
   <string name="feed_featured_image_share_subject">Лучшие изображения Викисклада</string>
   <string name="feed">Исследуйте</string>
@@ -361,4 +362,10 @@
   <string name="description_edit_revert_reason1">Ваше изменение не следовало один из &lt;a href=\"%1$s\"&gt;руководящих принципов&lt;/a&gt;.</string>
   <string name="description_edit_revert_reason2">Ваше изменение выглядело как эксперимент или вандализм.</string>
   <string name="description_edit_revert_history">Если вы заинтересованы, просмотрите &lt;a href=\"%1$s\"&gt;историю изменений&lt;/a&gt;.</string>
+  <string name="preference_title_cards_to_display">Отображаемые карточки</string>
+  <string name="preference_title_show_news_cards">Новости</string>
+  <string name="preference_title_show_featured_article_cards">Featured articles</string>
+  <string name="preference_title_show_most_read_cards">Trending</string>
+  <string name="preference_title_show_featured_image_cards">Picture of the day</string>
+  <string name="preference_description_cards_filtering">Выберите, какие карточки отображать на главной странице</string>
 </resources>

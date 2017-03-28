@@ -450,8 +450,20 @@ public final class Prefs {
         return getBoolean(R.string.preference_key_show_images, true);
     }
 
-    public static boolean isNewsCardEnabled() {
-        return getBoolean(R.string.preference_key_show_card_news, true);
+    public static boolean areNewsCardsEnabled() {
+        return getBoolean(R.string.preference_key_show_news_cards, true);
+    }
+
+    public static boolean areFeaturedArticleCardsEnabled() {
+        return getBoolean(R.string.preference_key_show_featured_article_cards, true);
+    }
+
+    public static boolean areMostReadCardsEnabled() {
+        return getBoolean(R.string.preference_key_show_most_read_cards, true);
+    }
+
+    public static boolean areFeaturedImageCardsEnabled() {
+        return getBoolean(R.string.preference_key_show_featured_image_cards, true);
     }
 
     public static String getEditTokenForWikiKey(String wiki) {

@@ -41,7 +41,11 @@
     <string name="preference_key_session_timeout">session_timeout</string>
     <string name="preference_key_remote_log">remoteLog</string>
     <string name="preference_key_crashed_before_activity_created">crashedBeforeActivityCreated</string>
-    <string name="preference_key_show_card_news">showCardNews</string>
+    <string name="preference_key_show_news_cards">showNewsCards</string>
+    <string name="preference_key_show_featured_article_cards">showFeaturedArticleCards</string>
+    <string name="preference_key_show_most_read_cards">showMostReadCards</string>
+    <string name="preference_key_show_featured_image_cards">showFeaturedImageCards</string>
+    <string name="preference_key_cards_filter_screen">cardsFilterScreen</string>
     <!-- Note: this value _must_ match net.hockeyapp.android.CrashManager.ALWAYS_SEND_KEY. -->
     <string name="preference_key_auto_upload_crash_reports">always_send_crash_reports</string>
     <string name="preference_key_reading_list_sort_mode">readingListSortMode</string>
