@@ -45,6 +45,8 @@
     <string name="preference_key_show_featured_article_cards">showFeaturedArticleCards</string>
     <string name="preference_key_show_most_read_cards">showMostReadCards</string>
     <string name="preference_key_show_featured_image_cards">showFeaturedImageCards</string>
+    <string name="preference_key_show_because_you_read_cards">showBecauseYouReadCards</string>
+    <string name="preference_key_show_continue_reading_cards">showContinueReadingCards</string>
     <string name="preference_key_cards_filter_screen">cardsFilterScreen</string>
     <!-- Note: this value _must_ match net.hockeyapp.android.CrashManager.ALWAYS_SEND_KEY. -->
     <string name="preference_key_auto_upload_crash_reports">always_send_crash_reports</string>

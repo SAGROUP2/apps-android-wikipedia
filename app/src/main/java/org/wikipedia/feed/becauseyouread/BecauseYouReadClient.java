@@ -19,6 +19,7 @@ import org.wikipedia.history.HistoryEntry;
 import org.wikipedia.page.bottomcontent.MainPageReadMoreTopicTask;
 import org.wikipedia.search.SearchResult;
 import org.wikipedia.search.SearchResults;
+import org.wikipedia.settings.Prefs;
 import org.wikipedia.util.log.L;
 
 import java.io.IOException;
@@ -81,8 +82,13 @@ public class BecauseYouReadClient implements FeedClient {
             public void onResponse(Call<MwQueryResponse<Pages>> call,
                                    Response<MwQueryResponse<Pages>> response) {
                 MwQueryResponse<Pages> pages = response.body();
-                if (pages.success() && pages.query().results(entry.getTitle().getWikiSite()) != null) {
-                    SearchResults results = SearchResults.filter(pages.query().results(entry.getTitle().getWikiSite()), entry.getTitle().getText(), false);
+                if (pages.success()
+                        && pages.query().results(entry.getTitle().getWikiSite()) != null
+                        && Prefs.areBecauseYouReadCardsEnabled()) {
+                    SearchResults results = SearchResults.filter(
+                            pages.query().results(entry.getTitle().getWikiSite()),
+                            entry.getTitle().getText(), false
+                    );
                     List<BecauseYouReadItemCard> itemCards = new ArrayList<>();
                     for (SearchResult result : results.getResults()) {
                         itemCards.add(new BecauseYouReadItemCard(result.getPageTitle()));

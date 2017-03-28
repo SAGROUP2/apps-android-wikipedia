@@ -10,6 +10,7 @@ import org.wikipedia.feed.continuereading.ContinueReadingClient;
 import org.wikipedia.feed.mainpage.MainPageClient;
 import org.wikipedia.feed.random.RandomClient;
 import org.wikipedia.feed.searchbar.SearchClient;
+import org.wikipedia.settings.Prefs;
 
 class FeedCoordinator extends FeedCoordinatorBase {
 
@@ -24,7 +25,9 @@ class FeedCoordinator extends FeedCoordinatorBase {
             addPendingClient(new AnnouncementClient());
         }
         addPendingClient(new AggregatedFeedContentClient());
-        addPendingClient(new ContinueReadingClient());
+        if (Prefs.areContinueReadingCardsEnabled()){
+            addPendingClient(new ContinueReadingClient());
+        }
         if (age == 0) {
             addPendingClient(new MainPageClient());
         }

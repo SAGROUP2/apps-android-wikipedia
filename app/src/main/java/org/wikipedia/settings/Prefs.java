@@ -466,6 +466,14 @@ public final class Prefs {
         return getBoolean(R.string.preference_key_show_featured_image_cards, true);
     }
 
+    public static boolean areBecauseYouReadCardsEnabled() {
+        return getBoolean(R.string.preference_key_show_because_you_read_cards, true);
+    }
+
+    public static boolean areContinueReadingCardsEnabled() {
+        return getBoolean(R.string.preference_key_show_continue_reading_cards, true);
+    }
+
     public static String getEditTokenForWikiKey(String wiki) {
         return getKey(R.string.preference_key_edittoken_for_wiki_format, wiki);
     }
