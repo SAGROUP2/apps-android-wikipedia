@@ -18,7 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import org.wikipedia.R;
-import org.wikipedia.feed.Hidable;
+import org.wikipedia.feed.Hideable;
 import org.wikipedia.feed.model.Card;
 
 import butterknife.BindView;
@@ -92,7 +92,7 @@ public class CardHeaderView extends FrameLayout {
 
     private void showOverflowMenu(View anchorView) {
         PopupMenu menu = new PopupMenu(anchorView.getContext(), anchorView);
-        int menuResource = card instanceof Hidable
+        int menuResource = card instanceof Hideable
                 ? R.menu.menu_feed_hidable_card_header
                 : R.menu.menu_feed_card_header;
         menu.getMenuInflater().inflate(menuResource, menu.getMenu());

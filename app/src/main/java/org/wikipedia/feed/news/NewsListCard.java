@@ -6,7 +6,7 @@ import android.support.annotation.VisibleForTesting;
 import org.wikipedia.R;
 import org.wikipedia.dataclient.WikiSite;
 import org.wikipedia.feed.model.CardType;
-import org.wikipedia.feed.Hidable;
+import org.wikipedia.feed.Hideable;
 import org.wikipedia.feed.model.ListCard;
 import org.wikipedia.feed.model.UtcDate;
 
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class NewsListCard extends ListCard<NewsItemCard> implements Hidable {
+public class NewsListCard extends ListCard<NewsItemCard> implements Hideable {
     @NonNull private UtcDate date;
 
     public NewsListCard(@NonNull List<NewsItem> news, int age, @NonNull WikiSite wiki) {

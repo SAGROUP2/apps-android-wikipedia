@@ -9,10 +9,10 @@ import org.wikipedia.WikipediaApp;
 import org.wikipedia.dataclient.WikiSite;
 import org.wikipedia.feed.model.Card;
 import org.wikipedia.feed.model.CardType;
-import org.wikipedia.feed.Hidable;
+import org.wikipedia.feed.Hideable;
 import org.wikipedia.util.DateUtil;
 
-public class FeaturedImageCard extends Card implements Hidable {
+public class FeaturedImageCard extends Card implements Hideable {
     @NonNull private FeaturedImage featuredImage;
     private int age;
     @NonNull private WikiSite wiki;

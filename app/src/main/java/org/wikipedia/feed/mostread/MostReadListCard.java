@@ -11,7 +11,7 @@ import org.wikipedia.WikipediaApp;
 import org.wikipedia.dataclient.WikiSite;
 import org.wikipedia.feed.model.CardType;
 import org.wikipedia.feed.model.FeedPageSummary;
-import org.wikipedia.feed.Hidable;
+import org.wikipedia.feed.Hideable;
 import org.wikipedia.feed.model.ListCard;
 import org.wikipedia.util.DateUtil;
 
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class MostReadListCard extends ListCard<MostReadItemCard> implements Hidable {
+public class MostReadListCard extends ListCard<MostReadItemCard> implements Hideable {
     private static final int MAX_SIZE = 5;
 
     @NonNull private final MostReadArticles articles;

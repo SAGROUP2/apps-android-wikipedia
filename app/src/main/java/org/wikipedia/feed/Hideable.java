@@ -1,5 +1,5 @@
 package org.wikipedia.feed;
 
-public interface Hidable {
+public interface Hideable {
     int getKeyResource();
 }

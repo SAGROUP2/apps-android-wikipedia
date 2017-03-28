@@ -11,12 +11,12 @@ import org.wikipedia.dataclient.WikiSite;
 import org.wikipedia.feed.model.Card;
 import org.wikipedia.feed.model.CardType;
 import org.wikipedia.feed.model.FeedPageSummary;
-import org.wikipedia.feed.Hidable;
+import org.wikipedia.feed.Hideable;
 import org.wikipedia.history.HistoryEntry;
 import org.wikipedia.page.PageTitle;
 import org.wikipedia.util.DateUtil;
 
-public class FeaturedArticleCard extends Card implements Hidable {
+public class FeaturedArticleCard extends Card implements Hideable {
     @NonNull private FeedPageSummary page;
     private int age;
     @NonNull private WikiSite wiki;

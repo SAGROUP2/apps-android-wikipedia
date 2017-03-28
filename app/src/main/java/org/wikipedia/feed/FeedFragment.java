@@ -299,11 +299,11 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
 
         public boolean onRequestHideAllCardsOfType(@NonNull Card card) {
 
-            if (!(card instanceof Hidable)) {
+            if (!(card instanceof Hideable)) {
                 return false;
             }
 
-            int keyResource = ((Hidable) card).getKeyResource();
+            int keyResource = ((Hideable) card).getKeyResource();
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
             if (preferences.edit().putBoolean(getString(keyResource), false).commit()) {
