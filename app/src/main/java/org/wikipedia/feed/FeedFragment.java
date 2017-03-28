@@ -313,7 +313,11 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
                     keyResource = R.string.preference_key_show_featured_image_cards;
                     break;
                 default:
-                    keyResource = R.string.preference_key_show_news_cards;
+                    keyResource = -1;
+            }
+
+            if (keyResource == -1) {
+                return false;
             }
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
