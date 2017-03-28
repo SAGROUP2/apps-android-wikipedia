@@ -9,9 +9,10 @@ import org.wikipedia.WikipediaApp;
 import org.wikipedia.dataclient.WikiSite;
 import org.wikipedia.feed.model.Card;
 import org.wikipedia.feed.model.CardType;
+import org.wikipedia.feed.Hidable;
 import org.wikipedia.util.DateUtil;
 
-public class FeaturedImageCard extends Card {
+public class FeaturedImageCard extends Card implements Hidable {
     @NonNull private FeaturedImage featuredImage;
     private int age;
     @NonNull private WikiSite wiki;
@@ -71,5 +72,10 @@ public class FeaturedImageCard extends Card {
     @Override
     protected int dismissHashCode() {
         return featuredImage.title().hashCode();
+    }
+
+    @Override
+    public int getKeyResource() {
+        return R.string.preference_key_show_featured_image_cards;
     }
 }

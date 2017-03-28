@@ -298,27 +298,12 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
         }
 
         public boolean onRequestHideAllCardsOfType(@NonNull Card card) {
-            int keyResource;
-            switch (card.type()) {
-                case NEWS_LIST:
-                    keyResource = R.string.preference_key_show_news_cards;
-                    break;
-                case FEATURED_ARTICLE:
-                    keyResource = R.string.preference_key_show_featured_article_cards;
-                    break;
-                case MOST_READ_LIST:
-                    keyResource = R.string.preference_key_show_most_read_cards;
-                    break;
-                case FEATURED_IMAGE:
-                    keyResource = R.string.preference_key_show_featured_image_cards;
-                    break;
-                default:
-                    keyResource = -1;
-            }
 
-            if (keyResource == -1) {
+            if (!(card instanceof Hidable)) {
                 return false;
             }
+
+            int keyResource = ((Hidable) card).getKeyResource();
 
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
             if (preferences.edit().putBoolean(getString(keyResource), false).commit()) {

@@ -11,6 +11,7 @@ import org.wikipedia.WikipediaApp;
 import org.wikipedia.dataclient.WikiSite;
 import org.wikipedia.feed.model.CardType;
 import org.wikipedia.feed.model.FeedPageSummary;
+import org.wikipedia.feed.Hidable;
 import org.wikipedia.feed.model.ListCard;
 import org.wikipedia.util.DateUtil;
 
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class MostReadListCard extends ListCard<MostReadItemCard> {
+public class MostReadListCard extends ListCard<MostReadItemCard> implements Hidable {
     private static final int MAX_SIZE = 5;
 
     @NonNull private final MostReadArticles articles;
@@ -61,5 +62,10 @@ public class MostReadListCard extends ListCard<MostReadItemCard> {
     @Override
     protected int dismissHashCode() {
         return (int) TimeUnit.MILLISECONDS.toDays(articles.date().getTime());
+    }
+
+    @Override
+    public int getKeyResource() {
+        return R.string.preference_key_show_most_read_cards;
     }
 }
