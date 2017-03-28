@@ -90,13 +90,13 @@ public class AggregatedFeedContentClient implements FeedClient {
             if (age == 0 && content.news() != null && Prefs.areNewsCardsEnabled()) {
                 cards.add(new NewsListCard(content.news(), age, wiki));
             }
-            if (content.tfa() != null) {
+            if (content.tfa() != null && Prefs.areFeaturedArticleCardsEnabled()) {
                 cards.add(new FeaturedArticleCard(content.tfa(), age, wiki));
             }
-            if (content.mostRead() != null) {
+            if (content.mostRead() != null && Prefs.areMostReadCardsEnabled()) {
                 cards.add(new MostReadListCard(content.mostRead(), wiki));
             }
-            if (content.potd() != null) {
+            if (content.potd() != null && Prefs.areFeaturedImageCardsEnabled()) {
                 cards.add(new FeaturedImageCard(content.potd(), age, wiki));
             }
             cb.success(cards);

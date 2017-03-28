@@ -26,7 +26,23 @@
 
             <CheckBoxPreference
                 android:key="@string/preference_key_show_news_cards"
-                android:title="@string/preference_title_show_news_cards">
+                android:title="@string/preference_title_show_news_cards"
+                android:defaultValue="true" >
+            </CheckBoxPreference>
+            <CheckBoxPreference
+                android:key="@string/preference_key_show_featured_article_cards"
+                android:title="@string/preference_title_show_featured_article_cards"
+                android:defaultValue="true" >
+            </CheckBoxPreference>
+            <CheckBoxPreference
+                android:key="@string/preference_key_show_most_read_cards"
+                android:title="@string/preference_title_show_most_read_cards"
+                android:defaultValue="true" >
+            </CheckBoxPreference>
+            <CheckBoxPreference
+                android:key="@string/preference_key_show_featured_image_cards"
+                android:title="@string/preference_title_show_featured_image_cards"
+                android:defaultValue="true" >
             </CheckBoxPreference>
 
         </android.support.v7.preference.PreferenceScreen>
