@@ -6,6 +6,7 @@
     <item android:id="@+id/developer_settings"
         android:icon="@drawable/ic_developer_mode_white_24dp"
         android:title="@string/menu_developer_settings"
+        android:visible="false"
         app:showAsAction="ifRoom" />
 
 </menu>

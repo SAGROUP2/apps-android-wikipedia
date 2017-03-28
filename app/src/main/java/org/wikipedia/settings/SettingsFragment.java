@@ -66,6 +66,25 @@ public class SettingsFragment extends PreferenceLoaderFragment {
 
     @Override
     public void onCreatePreferences(Bundle bundle, String rootKey) {
-        setPreferencesFromResource(R.xml.preferences, rootKey);
+        if (rootKey != null && isNestedPreferenceScreen(rootKey)) {
+            setPreferencesFromResource(R.xml.preferences, rootKey);
+        }
+        else {
+            super.onCreatePreferences(bundle, rootKey);
+        }
+    }
+
+    private boolean isNestedPreferenceScreen(String rootKey) {
+        String[] nestedKeys = {
+            getResources().getString(R.string.preference_key_cards_filter_screen)
+        };
+
+        for (String nestedKey : nestedKeys){
+            if (rootKey.equals(nestedKey)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
