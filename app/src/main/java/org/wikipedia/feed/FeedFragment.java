@@ -1,5 +1,6 @@
 package org.wikipedia.feed;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.IntRange;
@@ -8,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -296,6 +298,29 @@ public class FeedFragment extends Fragment implements BackPressedHandler {
             funnel.dismissCard(card.type(), position);
             showDismissCardUndoSnackbar(card, position);
             return true;
+        }
+
+        public boolean onRequestHideAllCardsOfType(@NonNull Card card) {
+            int keyResource;
+            switch (card.type()) {
+                case NEWS_LIST:
+                    keyResource = R.string.preference_key_show_news_cards;
+                    break;
+                case FEATURED_ARTICLE:
+                    keyResource = R.string.preference_key_show_featured_article_cards;
+                    break;
+                case MOST_READ_LIST:
+                    keyResource = R.string.preference_key_show_most_read_cards;
+                    break;
+                case FEATURED_IMAGE:
+                    keyResource = R.string.preference_key_show_featured_image_cards;
+                    break;
+                default:
+                    keyResource = R.string.preference_key_show_news_cards;
+            }
+
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+            return preferences.edit().putBoolean(getString(keyResource), false).commit();
         }
 
         @Override

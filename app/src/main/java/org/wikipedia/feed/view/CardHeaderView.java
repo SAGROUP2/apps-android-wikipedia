@@ -27,6 +27,7 @@ import butterknife.OnClick;
 public class CardHeaderView extends FrameLayout {
     public interface Callback {
         boolean onRequestDismissCard(@NonNull Card card);
+        boolean onRequestHideAllCardsOfType(@NonNull Card card);
     }
 
     @BindView(R.id.view_card_header_image) AppCompatImageView imageView;
@@ -102,6 +103,11 @@ public class CardHeaderView extends FrameLayout {
                 case R.id.menu_feed_card_dismiss:
                     if (callback != null & card != null) {
                         return callback.onRequestDismissCard(card);
+                    }
+                    return false;
+                case R.id.menu_feed_card_hide_all:
+                    if (callback != null & card != null) {
+                        return callback.onRequestHideAllCardsOfType(card);
                     }
                     return false;
                 default:
