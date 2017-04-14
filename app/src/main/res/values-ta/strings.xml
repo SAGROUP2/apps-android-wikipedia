@@ -7,6 +7,9 @@
   <string name="yes">ஆம்</string>
   <string name="no">இல்லை</string>
   <string name="search_hint">விக்கிப்பீடியாவில் தேடவும்</string>
+  <string name="search_hint_search_history">வரலாற்றைத் தேடு</string>
+  <string name="search_hint_search_my_lists">என் பட்டியல்களைத் தேடு</string>
+  <string name="search_hint_search_reading_list">வாசிப்புப் பட்டியலைத் தேடு</string>
   <string name="nav_item_history">வரலாறு</string>
   <string name="error_network_error">இணைய தொடர்பு இல்லை :(</string>
   <string name="page_error_retry">மறு முயற்சி செய்</string>
@@ -34,16 +37,16 @@
   <string name="nearby_distance_in_kilometers">%.2f கி. மீ.</string>
   <string name="nearby_zoom_to_location">வரைபடத்தை ஒரு இடத்தை பெரிதாக்கவும்</string>
   <string name="last_updated_text">இறுதியாக புதுப்பிக்கப்பட்டது %1$s</string>
+  <string name="talk_page_link_text">பேச்சு</string>
   <string name="preference_title_language">விக்கப்பீடியா மொழி</string>
   <string name="preference_languages_filter_hint">தேடுக</string>
   <string name="langlinks_filter_hint">தேடுக</string>
   <string name="langlinks_empty">பிற மொழிகளில் இந்த கட்டுரை இல்லை</string>
   <string name="langlinks_no_match">உங்கள் வினவலுடன் பொருந்தக்கூடிய மொழிகள் காணப்படவில்லை.</string>
   <string name="langlinks_activity_title">மற்ற மொழிகளில்</string>
-  <string name="menu_save_changes">மாற்றங்களைச் சேமி</string>
-  <string name="edit_section_error_retry">மறு முயற்சி செய்</string>
-  <string name="dialog_saving_in_progress">சேமிக்கிறது…</string>
-  <string name="edit_saved_successfully">தொகுப்பு சேமிக்கப்பட்டது!</string>
+  <string name="menu_save_changes" fuzzy="true">மாற்றங்களைச் சேமி</string>
+  <string name="dialog_saving_in_progress" fuzzy="true">சேமிக்கிறது…</string>
+  <string name="edit_saved_successfully" fuzzy="true">தொகுப்பு சேமிக்கப்பட்டது!</string>
   <string name="dialog_message_edit_failed">தொகுப்பு சேமிக்கத் தவறிவிட்டது!</string>
   <string name="dialog_message_edit_failed_retry">மறு முயற்சி செய்</string>
   <string name="dialog_message_edit_failed_cancel">இரத்து செய்</string>
@@ -52,6 +55,8 @@
   <string name="dialog_message_leaving_edit_stay">தங்கு</string>
   <string name="menu_show_toc">உள்ளடக்க அட்டவணை</string>
   <string name="search_no_results_found">முடிவுகள் எதுவும் காணப்படவில்லை</string>
+  <string name="search_reading_lists_no_results">ஒன்றும் இல்லை</string>
+  <string name="search_history_no_results">வரலாற்றில் ஒன்றும் இல்லை</string>
   <string name="edit_section_captcha_message">தானியங்கு எரிதத்தை எதிர்த்து காக்க, கீழ்வரும் சொற்களை உள்ளிடவும்</string>
   <string name="edit_section_captcha_hint">மேலுள்ள சொற்களை மீண்டும் உள்ளிடவும்</string>
   <string name="title_captcha">CAPTCHAவை உள்ளிடவும்</string>
@@ -126,7 +131,7 @@
   <string name="user_logged_in_blocked_from_editing">உங்கள் பயனீட்டாளர் கணக்கு விக்கி தொகுகல்லிருந்து தடை செய்யப்பட்டுள்ளது.</string>
   <string name="user_anon_blocked_from_editing">உங்கள் இனைய நெறிமுறை முகவரி தொகுகல்லிருந்து தடை செய்யப்பட்டுள்ளது.</string>
   <string name="edit_next">அடுத்து</string>
-  <string name="edit_done">சேமி</string>
+  <string name="edit_done" fuzzy="true">சேமி</string>
   <string name="edit_preview">முன்னோட்டம்</string>
   <string name="edit_summary_tag_typo">தட்டுப்பிழைத்திருத்தம்</string>
   <string name="edit_summary_tag_grammar">இலக்கணப் பிழைத்திருத்தம்</string>

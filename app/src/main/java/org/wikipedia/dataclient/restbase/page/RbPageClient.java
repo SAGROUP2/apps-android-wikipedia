@@ -2,20 +2,19 @@ package org.wikipedia.dataclient.restbase.page;
 
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.gson.JsonParseException;
 
-import org.wikipedia.dataclient.ServiceError;
 import org.wikipedia.dataclient.page.PageClient;
-import org.wikipedia.dataclient.page.PageCombo;
 import org.wikipedia.dataclient.page.PageLead;
 import org.wikipedia.dataclient.page.PageRemaining;
 import org.wikipedia.dataclient.page.PageSummary;
 import org.wikipedia.dataclient.restbase.RbDefinition;
 
-import java.io.IOException;
 import java.util.Map;
 
+import okhttp3.CacheControl;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -49,27 +48,22 @@ public class RbPageClient implements PageClient {
     }
 
     @SuppressWarnings("unchecked")
-    @NonNull @Override public Call<? extends PageLead> lead(@NonNull String title,
+    @NonNull @Override public Call<? extends PageLead> lead(@Nullable CacheControl cacheControl,
+                                                            @NonNull CacheOption cacheOption,
+                                                            @NonNull String title,
                                                             int leadThumbnailWidth,
                                                             boolean noImages) {
-        return service.lead(title, optional(noImages));
+        return service.lead(cacheControl == null ? null : cacheControl.toString(),
+                optional(cacheOption.save()), title, optional(noImages));
     }
 
     @SuppressWarnings("unchecked")
-    @NonNull @Override public Call<? extends PageRemaining> sections(@NonNull String title,
+    @NonNull @Override public Call<? extends PageRemaining> sections(@Nullable CacheControl cacheControl,
+                                                                     @NonNull CacheOption cacheOption,
+                                                                     @NonNull String title,
                                                                      boolean noImages) {
-        return service.sections(title, optional(noImages));
-    }
-
-    @Override public PageCombo pageCombo(String title, boolean noImages) throws IOException {
-        Response<RbPageCombo> rsp = service.pageCombo(title, optional(noImages)).execute();
-        if (!rsp.body().hasError()) {
-            return rsp.body();
-        }
-        ServiceError err = rsp.body() == null || rsp.body().getError() == null
-                ? null
-                : rsp.body().getError();
-        throw new IOException(err == null ? rsp.message() : err.getDetails());
+        return service.sections(cacheControl == null ? null : cacheControl.toString(),
+                optional(cacheOption.save()), title, optional(noImages));
     }
 
     /* Not defined in the PageClient interface since the Wiktionary definition endpoint exists only

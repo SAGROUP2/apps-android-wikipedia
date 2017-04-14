@@ -4,45 +4,52 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.wikipedia.WikipediaApp;
+import org.wikipedia.dataclient.WikiSite;
 import org.wikipedia.dataclient.okhttp.OkHttpConnectionFactory;
+import org.wikipedia.dataclient.okhttp.cache.SaveHeader;
 import org.wikipedia.dataclient.page.PageClient;
 import org.wikipedia.dataclient.page.PageClientFactory;
-import org.wikipedia.page.Page;
+import org.wikipedia.dataclient.page.PageLead;
+import org.wikipedia.dataclient.page.PageRemaining;
+import org.wikipedia.html.ImageTagParser;
+import org.wikipedia.html.PixelDensityDescriptorParser;
 import org.wikipedia.page.PageTitle;
 import org.wikipedia.readinglist.page.ReadingListPageRow;
 import org.wikipedia.readinglist.page.database.ReadingListPageDao;
 import org.wikipedia.readinglist.page.database.disk.ReadingListPageDiskRow;
 import org.wikipedia.util.DeviceUtil;
-import org.wikipedia.util.FileUtil;
+import org.wikipedia.util.DimenUtil;
 import org.wikipedia.util.UriUtil;
 import org.wikipedia.util.log.L;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
+import okhttp3.CacheControl;
+import okhttp3.CacheDelegate;
 import okhttp3.Request;
-import okhttp3.Response;
+import retrofit2.Call;
 
-import static org.wikipedia.util.FileUtil.writeFile;
+import static org.wikipedia.dataclient.okhttp.OkHttpConnectionFactory.SAVE_CACHE;
 
 public class SavedPageSyncService extends IntentService {
     @NonNull private ReadingListPageDao dao;
+    @NonNull private final CacheDelegate cacheDelegate = new CacheDelegate(SAVE_CACHE);
+    @NonNull private final PageImageUrlParser pageImageUrlParser
+            = new PageImageUrlParser(new ImageTagParser(), new PixelDensityDescriptorParser());
 
     public SavedPageSyncService() {
         super("SavedPageSyncService");
         dao = ReadingListPageDao.instance();
     }
 
-    @Override
-    protected void onHandleIntent(@NonNull Intent intent) {
+    @Override protected void onHandleIntent(@Nullable Intent intent) {
+        // todo: allow deletes while offline
         if (!DeviceUtil.isOnline(this)) {
             L.i("Device is offline; aborting sync service");
             return;
@@ -50,30 +57,21 @@ public class SavedPageSyncService extends IntentService {
 
         List<ReadingListPageDiskRow> queue = new ArrayList<>();
         Collection<ReadingListPageDiskRow> rows = dao.startDiskTransaction();
-        L.i("Syncing saved rlp pages with saved pages service");
 
-        for (final ReadingListPageDiskRow row : rows) {
-            L.v("Found pending tx with status: " + row.status().name());
+        for (ReadingListPageDiskRow row : rows) {
             switch (row.status()) {
                 case UNSAVED:
                 case DELETED:
-                    String filename = row.filename();
-                    if (filename != null) {
-                        FileUtil.delete(new File(filename), true);
-                        dao.completeDiskTransaction(row);
-                        L.v("Deleted" + filename);
-                        continue;
-                    }
-                    L.e("Found row with null filename; skipping");
-                    continue;
+                    deleteRow(row);
+                    break;
                 case OUTDATED:
                     queue.add(row);
-                    continue;
+                    break;
                 case ONLINE:
                 case SAVED:
-                    L.w("Received row with unexpected status " + row.status() + ": "
-                            + row.toString());
-                    continue;
+                    // SavedPageSyncService observes all list changes. No transaction is pending
+                    // when the row is online or saved.
+                    break;
                 default:
                     throw new UnsupportedOperationException("Invalid disk row status: "
                             + row.status().name());
@@ -82,8 +80,40 @@ public class SavedPageSyncService extends IntentService {
         saveNewEntries(queue);
     }
 
-    @VisibleForTesting
-    public void saveNewEntries(List<ReadingListPageDiskRow> queue) {
+    private void deleteRow(@NonNull ReadingListPageDiskRow row) {
+        ReadingListPageRow dat = row.dat();
+        PageTitle pageTitle = makeTitleFrom(row);
+        if (dat != null && pageTitle != null) {
+            PageLead lead = null;
+            Call<PageLead> leadCall = reqPageLead(CacheControl.FORCE_CACHE, pageTitle);
+            try {
+                lead = leadCall.execute().body();
+            } catch (IOException ignore) { }
+
+            if (lead != null) {
+                for (String url : pageImageUrlParser.parse(lead)) {
+                    cacheDelegate.remove(saveImageReq(pageTitle.getWikiSite(), url));
+                }
+                cacheDelegate.remove(leadCall.request());
+            }
+
+            Call<PageRemaining> sectionsCall = reqPageSections(CacheControl.FORCE_CACHE, pageTitle);
+            PageRemaining sections = null;
+            try {
+                sections = sectionsCall.execute().body();
+            } catch (IOException ignore) { }
+
+            if (sections != null) {
+                for (String url : pageImageUrlParser.parse(sections)) {
+                    cacheDelegate.remove(saveImageReq(pageTitle.getWikiSite(), url));
+                }
+                cacheDelegate.remove(sectionsCall.request());
+            }
+        }
+        dao.completeDiskTransaction(row);
+    }
+
+    private void saveNewEntries(List<ReadingListPageDiskRow> queue) {
         while (!queue.isEmpty()) {
             ReadingListPageDiskRow row = queue.get(0);
             boolean ok = savePageFor(row);
@@ -96,32 +126,79 @@ public class SavedPageSyncService extends IntentService {
         }
     }
 
-    @VisibleForTesting
-    public boolean savePageFor(@NonNull ReadingListPageDiskRow row) {
-        final PageTitle title = makeTitleFrom(row);
-        if (title == null) {
+    private boolean savePageFor(@NonNull ReadingListPageDiskRow row) {
+        PageTitle pageTitle = makeTitleFrom(row);
+        if (pageTitle == null) {
             return false;
         }
 
+        String title = pageTitle.getPrefixedText();
+        ImmutablePair<PageLead, PageRemaining> page;
         try {
-            final Page page = getApiService(title).pageCombo(title.getPrefixedText(),
-                            !WikipediaApp.getInstance().isImageDownloadEnabled()).toPage(title);
-            final SavedPage savedPage = new SavedPage(page.getTitle());
-            final ImageUrlHtmlParser parser = new ImageUrlHtmlParser.Builder(FileUtil.getSavedPageDirFor(title))
-                .extractUrls(page).build();
-            savedPage.writeToFileSystem(page);
-            downloadImages(parser);
-            savedPage.writeUrlMap(parser.toJSON());
-            L.i("Page " + title.getDisplayText() + " saved!");
-            return true;
-        } catch (Exception e) {
-            L.e("Failed to save page " + title.getDisplayText(), e);
+            page = reqPage(null, pageTitle);
+            reqSaveImage(pageTitle.getWikiSite(), pageImageUrlParser.parse(page.getLeft()));
+            reqSaveImage(pageTitle.getWikiSite(), pageImageUrlParser.parse(page.getRight()));
+        } catch (IOException e) {
+            L.e("Failed to save page " + title, e);
             return false;
+        }
+
+        return true;
+    }
+
+    @NonNull private ImmutablePair<PageLead, PageRemaining> reqPage(@Nullable CacheControl cacheControl,
+                                                                    @NonNull PageTitle pageTitle) throws IOException {
+        PageLead lead = reqPageLead(cacheControl, pageTitle).execute().body();
+        PageRemaining sections = reqPageSections(cacheControl, pageTitle).execute().body();
+        return new ImmutablePair<>(lead, sections);
+    }
+
+    @NonNull private Call<PageLead> reqPageLead(@Nullable CacheControl cacheControl,
+                                                @NonNull PageTitle pageTitle) {
+        PageClient client = newPageClient(pageTitle);
+
+        String title = pageTitle.getPrefixedText();
+        int thumbnailWidth = DimenUtil.calculateLeadImageWidth();
+        boolean noImages = !WikipediaApp.getInstance().isImageDownloadEnabled();
+        PageClient.CacheOption cacheOption = PageClient.CacheOption.SAVE;
+
+        return client.lead(cacheControl, cacheOption, title, thumbnailWidth, noImages);
+    }
+
+    @NonNull private Call<PageRemaining> reqPageSections(@Nullable CacheControl cacheControl,
+                                                         @NonNull PageTitle pageTitle) {
+        PageClient client = newPageClient(pageTitle);
+
+        String title = pageTitle.getPrefixedText();
+        boolean noImages = !WikipediaApp.getInstance().isImageDownloadEnabled();
+        PageClient.CacheOption cacheOption = PageClient.CacheOption.SAVE;
+
+        return client.sections(cacheControl, cacheOption, title, noImages);
+    }
+
+    private void reqSaveImage(@NonNull WikiSite wiki, @NonNull List<String> urls) throws IOException {
+        for (String url : urls) {
+            reqSaveImage(wiki, url);
         }
     }
 
-    @Nullable
-    private PageTitle makeTitleFrom(@NonNull ReadingListPageDiskRow row) {
+    private void reqSaveImage(@NonNull WikiSite wiki, @NonNull String url) throws IOException {
+        Request request = saveImageReq(wiki, url);
+
+        // Note: raw non-Retrofit usage of OkHttp Requests requires that the Response body is read
+        // for the cache to be written.
+        OkHttpConnectionFactory.getClient().newCall(request).execute().body().close();
+    }
+
+    @NonNull private Request saveImageReq(@NonNull WikiSite wiki, @NonNull String url) {
+        return new Request
+                .Builder()
+                .addHeader(SaveHeader.FIELD, SaveHeader.VAL_ENABLED)
+                .url(UriUtil.resolveProtocolRelativeUrl(wiki, url))
+                .build();
+    }
+
+    @Nullable private PageTitle makeTitleFrom(@NonNull ReadingListPageDiskRow row) {
         ReadingListPageRow pageRow = row.dat();
         if (pageRow == null) {
             return null;
@@ -130,45 +207,7 @@ public class SavedPageSyncService extends IntentService {
         return new PageTitle(namespace, pageRow.title(), pageRow.wikiSite());
     }
 
-    /**
-     * @param imageUrlMap a Map with entries {source URL, file path} of images to be downloaded
-     */
-    private void downloadImages(@NonNull final ImageUrlHtmlParser imageUrlMap) {
-        for (Map.Entry<String, String> entry : imageUrlMap.entrySet()) {
-            final String url = UriUtil.resolveProtocolRelativeUrl(entry.getKey());
-            final File file = new File(entry.getValue());
-            try {
-                downloadImage(url, file);
-            } catch (IOException e) {
-                L.e("Failed to download image: " + url, e);
-            }
-        }
-    }
-
-    private boolean downloadImage(@NonNull String url, @NonNull File file) throws IOException {
-        if (!url.startsWith("http")) {
-            L.e("ignoring non-HTTP URL " + url);
-            return true;
-        }
-
-        Request request = new Request.Builder().url(url).build();
-        Response response = OkHttpConnectionFactory.getClient().newCall(request).execute();
-
-        try {
-            InputStream stream = response.body().byteStream();
-            writeFile(stream, file);
-            L.v("downloaded image " + url + " to " + file.getAbsolutePath());
-            return true;
-        } catch (Exception e) {
-            L.e("could not download image " + url, e);
-        } finally {
-            response.close();
-        }
-        return false;
-    }
-
-    @NonNull
-    private PageClient getApiService(@NonNull PageTitle title) {
+    @NonNull private PageClient newPageClient(@NonNull PageTitle title) {
         return PageClientFactory.create(title.getWikiSite(), title.namespace());
     }
 }

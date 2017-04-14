@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -31,8 +32,10 @@ import org.wikipedia.analytics.GalleryFunnel;
 import org.wikipedia.analytics.IntentFunnel;
 import org.wikipedia.analytics.LoginFunnel;
 import org.wikipedia.feed.FeedFragment;
+import org.wikipedia.feed.featured.FeaturedArticleCard;
 import org.wikipedia.feed.image.FeaturedImage;
 import org.wikipedia.feed.image.FeaturedImageCard;
+import org.wikipedia.feed.model.Card;
 import org.wikipedia.feed.news.NewsActivity;
 import org.wikipedia.feed.news.NewsItemCard;
 import org.wikipedia.gallery.GalleryActivity;
@@ -109,7 +112,6 @@ public class MainFragment extends Fragment implements BackPressedHandler, FeedFr
                 return true;
             }
         });
-
 
         if (savedInstanceState == null) {
             handleIntent(getActivity().getIntent());
@@ -235,6 +237,27 @@ public class MainFragment extends Fragment implements BackPressedHandler, FeedFr
         bottomSheetPresenter.show(getChildFragmentManager(),
                 AddToReadingListDialog.newInstance(entry.getTitle(),
                         AddToReadingListDialog.InvokeSource.FEED));
+    }
+
+    @Override public void onFeedAddFeaturedPageToList(@NonNull final FeedFragment fragment,
+                                                      @NonNull final FeaturedArticleCard card,
+                                                      @NonNull HistoryEntry entry) {
+        bottomSheetPresenter.show(getChildFragmentManager(),
+                AddToReadingListDialog.newInstance(entry.getTitle(),
+                        AddToReadingListDialog.InvokeSource.FEED,
+                        new DialogInterface.OnDismissListener() {
+                            @Override public void onDismiss(DialogInterface dialogInterface) {
+                                // Update card view in case saved state has changed
+                                fragment.notifyItemChanged(card);
+                            }
+                        }));
+    }
+
+    @Override
+    public void onFeedRemovePageFromList(FeedFragment fragment, Card card, HistoryEntry entry) {
+        FeedbackUtil.showMessage(getActivity(),
+                getString(R.string.reading_list_item_deleted, entry.getTitle().getDisplayText()));
+        fragment.notifyItemChanged(card);
     }
 
     @Override public void onFeedSharePage(HistoryEntry entry) {
@@ -397,10 +420,13 @@ public class MainFragment extends Fragment implements BackPressedHandler, FeedFr
     }
 
     @OnPageChange(R.id.fragment_main_view_pager) void onTabChanged(int position) {
-        Callback callback = callback();
-        if (callback != null) {
+        Fragment fragment = ((NavTabFragmentPagerAdapter) viewPager.getAdapter()).getCurrentFragment();
+        if (fragment instanceof FeedFragment) {
+            ((FeedFragment) fragment).onBecomeActiveTab();
+        }
+        if (callback() != null) {
             NavTab tab = NavTab.of(position);
-            callback.onTabChanged(tab);
+            callback().onTabChanged(tab);
         }
     }
 
@@ -460,8 +486,7 @@ public class MainFragment extends Fragment implements BackPressedHandler, FeedFr
     }
 
     private void goToTab(@NonNull NavTab tab) {
-        viewPager.setCurrentItem(tab.code());
-        tabLayout.setCurrentTab(tab);
+        tabLayout.setSelectedItemId(tab.code());
         cancelSearch();
     }
 

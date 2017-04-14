@@ -3,12 +3,14 @@ package org.wikipedia.dataclient.restbase.page;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import org.wikipedia.dataclient.okhttp.cache.SaveHeader;
 import org.wikipedia.dataclient.restbase.RbDefinition;
 
 import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -42,7 +44,9 @@ public interface RbPageService {
             ACCEPT_HEADER_MOBILE_SECTIONS
     })
     @GET("page/mobile-sections-lead/{title}")
-    @NonNull Call<RbPageLead> lead(@NonNull @Path("title") String title,
+    @NonNull Call<RbPageLead> lead(@Nullable @Header("Cache-Control") String cacheControl,
+                                   @Header(SaveHeader.FIELD) Boolean save,
+                                   @NonNull @Path("title") String title,
                                    @Nullable @Query("noimages") Boolean noImages);
 
     /**
@@ -53,20 +57,10 @@ public interface RbPageService {
      */
     @Headers(ACCEPT_HEADER_MOBILE_SECTIONS)
     @GET("page/mobile-sections-remaining/{title}")
-    @NonNull Call<RbPageRemaining> sections(@NonNull @Path("title") String title,
+    @NonNull Call<RbPageRemaining> sections(@Nullable @Header("Cache-Control") String cacheControl,
+                                            @Header(SaveHeader.FIELD) Boolean save,
+                                            @NonNull @Path("title") String title,
                                             @Nullable @Query("noimages") Boolean noImages);
-
-    /**
-     * Gets all page content of a given title -- for refreshing a saved page
-     * Note: the only difference in the URL from #pageLead is the sections=all instead of 0.
-     *
-     * @param title the page title to be used including prefix
-     * @param noImages add the noimages flag to the request if true
-     */
-    @Headers(ACCEPT_HEADER_MOBILE_SECTIONS)
-    @GET("page/mobile-sections/{title}")
-    Call<RbPageCombo> pageCombo(@Path("title") String title,
-                                @Query("noimages") Boolean noImages);
 
     // todo: this Content Service-only endpoint is under page/ but that implementation detail should
     //       probably not be reflected here. Move to WordDefinitionClient

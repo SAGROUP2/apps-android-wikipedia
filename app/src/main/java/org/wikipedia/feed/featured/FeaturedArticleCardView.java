@@ -16,6 +16,7 @@ import org.wikipedia.feed.view.FeedAdapter;
 import org.wikipedia.history.HistoryEntry;
 import org.wikipedia.page.PageTitle;
 import org.wikipedia.readinglist.ReadingList;
+import org.wikipedia.readinglist.ReadingListBookmarkMenu;
 import org.wikipedia.readinglist.page.ReadingListPage;
 import org.wikipedia.readinglist.page.database.ReadingListDaoProxy;
 import org.wikipedia.views.FaceAndColorDetectImageView;
@@ -29,6 +30,11 @@ import butterknife.OnClick;
 
 public class FeaturedArticleCardView extends DefaultFeedCardView<FeaturedArticleCard>
         implements ItemTouchHelperSwipeAdapter.SwipeableView {
+    public interface Callback {
+        void onAddFeaturedPageToList(@NonNull FeaturedArticleCard card, @NonNull HistoryEntry entry);
+        void onRemoveFeaturedPageFromList(@NonNull FeaturedArticleCard card, @NonNull HistoryEntry entry);
+    }
+
     @BindView(R.id.view_featured_article_card_header) View headerView;
     @BindView(R.id.view_featured_article_card_footer) View footerView;
     @BindView(R.id.view_featured_article_card_image) FaceAndColorDetectImageView imageView;
@@ -116,7 +122,9 @@ public class FeaturedArticleCardView extends DefaultFeedCardView<FeaturedArticle
                         ActionFooterView footer = new ActionFooterView(getContext())
                                 .actionIcon(actionIcon)
                                 .actionText(actionText)
-                                .onActionListener(new CardSaveListener())
+                                .onActionListener(listContainsTitle
+                                        ? new CardBookmarkMenuListener()
+                                        : new CardAddToListListener())
                                 .onShareListener(new CardShareListener());
 
                         if (listContainsTitle) {
@@ -148,11 +156,39 @@ public class FeaturedArticleCardView extends DefaultFeedCardView<FeaturedArticle
         footerView = view;
     }
 
-    private class CardSaveListener implements OnClickListener {
+    @NonNull private HistoryEntry getEntry() {
+        return getCard().historyEntry(HistoryEntry.SOURCE_FEED_FEATURED);
+    }
+
+    private class CardAddToListListener implements OnClickListener {
         @Override
         public void onClick(View v) {
             if (getCallback() != null && getCard() != null) {
-                getCallback().onAddPageToList(getCard().historyEntry(HistoryEntry.SOURCE_FEED_FEATURED));
+                getCallback().onAddFeaturedPageToList(getCard(), getEntry());
+            }
+        }
+    }
+
+    private class CardBookmarkMenuListener implements OnClickListener {
+        @Override
+        public void onClick(View v) {
+            if (getCallback() != null && getCard() != null) {
+                new ReadingListBookmarkMenu(footerView, new ReadingListBookmarkMenu.Callback() {
+                    @Override
+                    public void onAddRequest(@Nullable ReadingListPage page) {
+                        if (getCallback() != null && getCard() != null) {
+                            getCallback().onAddFeaturedPageToList(getCard(),
+                                    getCard().historyEntry(HistoryEntry.SOURCE_FEED_FEATURED));
+                        }
+                    }
+
+                    @Override
+                    public void onDeleted(@Nullable ReadingListPage page) {
+                        if (getCallback() != null && getCard() != null) {
+                            getCallback().onRemoveFeaturedPageFromList(getCard(), getEntry());
+                        }
+                    }
+                }).show(getEntry().getTitle());
             }
         }
     }

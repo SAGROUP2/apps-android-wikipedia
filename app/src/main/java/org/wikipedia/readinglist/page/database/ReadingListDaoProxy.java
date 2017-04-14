@@ -8,19 +8,7 @@ import org.wikipedia.readinglist.ReadingList;
 import org.wikipedia.readinglist.page.ReadingListPage;
 import org.wikipedia.readinglist.page.database.disk.DiskStatus;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 public final class ReadingListDaoProxy {
-
-    public static List<PageTitle> pageTitles(@NonNull Collection<ReadingListPage> pages) {
-        List<PageTitle> titles = new ArrayList<>();
-        for (ReadingListPage page : pages) {
-            titles.add(pageTitle(page));
-        }
-        return titles;
-    }
 
     @NonNull public static PageTitle pageTitle(@NonNull ReadingListPage page) {
         return new PageTitle(page.title(), page.wikiSite(), page.thumbnailUrl(), page.description());
@@ -60,6 +48,10 @@ public final class ReadingListDaoProxy {
     @NonNull public static String listKey(@NonNull String title) {
         // TODO: we need to rekey all pages if a user changes the list title.
         return Base64.encodeToString(title.getBytes(), Base64.NO_WRAP);
+    }
+
+    @NonNull public static String listName(@NonNull String key) {
+        return new String(Base64.decode(key, Base64.NO_WRAP));
     }
 
     private ReadingListDaoProxy() { }

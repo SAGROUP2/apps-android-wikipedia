@@ -11,8 +11,10 @@ import org.mediawiki.api.json.ApiException;
 import org.wikipedia.R;
 import org.wikipedia.createaccount.CreateAccountException;
 import org.wikipedia.dataclient.mwapi.MwException;
+import org.wikipedia.dataclient.okhttp.HttpStatusException;
 import org.wikipedia.login.LoginClient;
 
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeoutException;
 
@@ -53,8 +55,10 @@ public final class ThrowableUtil {
                                   getApiErrorMessage(context, (ApiException) inner));
         } else if (isNetworkError(e)) {
             result = new AppError(context.getString(R.string.error_network_error),
-                                  context.getString(R.string.format_error_server_message,
-                                      inner.getLocalizedMessage()));
+                    context.getString(R.string.format_error_server_message,
+                            inner.getLocalizedMessage()));
+        } else if (e instanceof HttpStatusException) {
+            result = new AppError(e.getMessage(), Integer.toString(((HttpStatusException) e).code()));
         } else if (inner instanceof LoginClient.LoginFailedException
                 || inner instanceof CreateAccountException
                 || inner instanceof MwException) {
@@ -70,16 +74,21 @@ public final class ThrowableUtil {
         return result;
     }
 
-    public static boolean isRetryable(@NonNull Context ctx, @NonNull Throwable e) {
-        return isRetryable(ThrowableUtil.getAppError(ctx, e));
+    public static boolean is404(@NonNull Context ctx, @NonNull Throwable e) {
+        return is404(ThrowableUtil.getAppError(ctx, e));
     }
 
-    public static boolean isRetryable(@NonNull ThrowableUtil.AppError e) {
-        return !(e.getDetail() != null && e.getDetail().contains("404"));
+    public static boolean is404(@NonNull ThrowableUtil.AppError e) {
+        return e.getDetail() != null && e.getDetail().contains("404");
+    }
+
+    public static boolean isOffline(@NonNull Throwable caught) {
+        return caught instanceof UnknownHostException || caught instanceof SocketException;
     }
 
     private static boolean isNetworkError(@NonNull Throwable e) {
         return ThrowableUtil.throwableContainsException(e, HttpRequest.HttpRequestException.class)
+                || ThrowableUtil.throwableContainsException(e, HttpStatusException.class)
                 || ThrowableUtil.throwableContainsException(e, UnknownHostException.class)
                 || ThrowableUtil.throwableContainsException(e, TimeoutException.class)
                 || ThrowableUtil.throwableContainsException(e, SSLException.class);

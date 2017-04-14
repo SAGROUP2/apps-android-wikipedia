@@ -6,7 +6,6 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.PluralsRes;
 import android.support.annotation.StringRes;
-import android.support.test.filters.SmallTest;
 import android.util.DisplayMetrics;
 
 import org.junit.Test;
@@ -32,7 +31,7 @@ import static org.junit.Assert.fail;
  *
  * TODO: check content_license_html is valid HTML
  */
-@SmallTest public class TranslationTests {
+public class TranslationTests {
     /** Add more if needed, but then also add some tests. */
     private static final String[] POSSIBLE_PARAMS = new String[] {"%s", "%1$s", "%2$s", "%1$d", "%2$d", "%d", "%.2f", "^1"};
 
@@ -66,7 +65,7 @@ import static org.junit.Assert.fail;
                 // tag (html) parameters
                 for (Res res : tagRes) {
                     if (res.id == R.string.wp_stylized
-                        && (lang.startsWith("iw") || lang.startsWith("he"))
+                        && (lang.startsWith("iw") || lang.startsWith("he") || lang.startsWith("ckb"))
                             || res.id == R.string.notification_talk
                             || res.id == R.string.notification_reverted
                             || res.id == R.string.notification_thanks) {

@@ -1,5 +1,6 @@
 package org.wikipedia.page;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -27,6 +28,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.appenguin.onboarding.ToolTip;
@@ -65,11 +67,10 @@ import org.wikipedia.page.tabs.Tab;
 import org.wikipedia.page.tabs.TabsProvider;
 import org.wikipedia.readinglist.AddToReadingListDialog;
 import org.wikipedia.readinglist.ReadingList;
+import org.wikipedia.readinglist.ReadingListBookmarkMenu;
 import org.wikipedia.readinglist.page.ReadingListPage;
 import org.wikipedia.readinglist.page.database.ReadingListDaoProxy;
 import org.wikipedia.readinglist.page.database.ReadingListPageDao;
-import org.wikipedia.savedpages.ImageUrlHtmlParser;
-import org.wikipedia.savedpages.LoadSavedPageUrlMapTask;
 import org.wikipedia.settings.Prefs;
 import org.wikipedia.tooltip.ToolTipUtil;
 import org.wikipedia.util.ActiveTimer;
@@ -82,6 +83,7 @@ import org.wikipedia.util.StringUtil;
 import org.wikipedia.util.ThrowableUtil;
 import org.wikipedia.util.UriUtil;
 import org.wikipedia.util.log.L;
+import org.wikipedia.views.ConfigurableTabLayout;
 import org.wikipedia.views.ObservableWebView;
 import org.wikipedia.views.SwipeRefreshLayoutWithScroll;
 import org.wikipedia.views.WikiDrawerLayout;
@@ -97,6 +99,7 @@ import static butterknife.ButterKnife.findById;
 import static org.wikipedia.util.DimenUtil.getContentTopOffset;
 import static org.wikipedia.util.DimenUtil.getContentTopOffsetPx;
 import static org.wikipedia.util.ResourceUtil.getThemedAttributeId;
+import static org.wikipedia.util.ThrowableUtil.isOffline;
 import static org.wikipedia.util.UriUtil.decodeURL;
 import static org.wikipedia.util.UriUtil.visitInExternalBrowser;
 
@@ -122,11 +125,15 @@ public class PageFragment extends Fragment implements BackPressedHandler {
         @Nullable PageLoadCallbacks onPageGetPageLoadCallbacks();
         void onPageAddToReadingList(@NonNull PageTitle title,
                                     @NonNull AddToReadingListDialog.InvokeSource source);
+        void onPageRemoveFromReadingLists(@NonNull PageTitle title);
         @Nullable View onPageGetContentView();
         @Nullable View onPageGetTabsContainerView();
         void onPagePopFragment();
         @Nullable AppCompatActivity getActivity();
         void onPageInvalidateOptionsMenu();
+        void onPageLoadError(@NonNull PageTitle title);
+        void onPageLoadErrorRetry();
+        void onPageLoadErrorBackPressed();
         boolean shouldLoadFromBackStack();
         boolean shouldShowTabList();
     }
@@ -143,6 +150,7 @@ public class PageFragment extends Fragment implements BackPressedHandler {
     private PageFragmentLoadState pageFragmentLoadState;
     private PageViewModel model;
     @Nullable private PageInfo pageInfo;
+    private boolean pageSavedToList;
 
     /**
      * List of tabs, each of which contains a backstack of page titles.
@@ -163,7 +171,7 @@ public class PageFragment extends Fragment implements BackPressedHandler {
     private SwipeRefreshLayoutWithScroll refreshView;
     private WikiErrorView errorView;
     private WikiDrawerLayout tocDrawer;
-    private TabLayout tabLayout;
+    private ConfigurableTabLayout tabLayout;
 
     private CommunicationBridge bridge;
     private LinkHandler linkHandler;
@@ -188,7 +196,9 @@ public class PageFragment extends Fragment implements BackPressedHandler {
             = new TabLayout.OnTabSelectedListener() {
         @Override
         public void onTabSelected(TabLayout.Tab tab) {
-            PageActionTab.of(tab.getPosition()).select(pageActionTabsCallback);
+            if (tabLayout.isEnabled(tab)) {
+                PageActionTab.of(tab.getPosition()).select(pageActionTabsCallback);
+            }
         }
 
         @Override
@@ -205,7 +215,23 @@ public class PageFragment extends Fragment implements BackPressedHandler {
     private PageActionTab.Callback pageActionTabsCallback = new PageActionTab.Callback() {
         @Override
         public void onAddToReadingListTabSelected() {
-            addToReadingList(AddToReadingListDialog.InvokeSource.BOOKMARK_BUTTON);
+            if (pageSavedToList) {
+                new ReadingListBookmarkMenu(tabLayout, new ReadingListBookmarkMenu.Callback() {
+                    @Override
+                    public void onAddRequest(@Nullable ReadingListPage page) {
+                        addToReadingList(AddToReadingListDialog.InvokeSource.BOOKMARK_BUTTON);
+                    }
+
+                    @Override
+                    public void onDeleted(@Nullable ReadingListPage page) {
+                        if (callback() != null) {
+                            callback().onPageRemoveFromReadingLists(getTitle());
+                        }
+                    }
+                }).show(getTitle());
+            } else {
+                addToReadingList(AddToReadingListDialog.InvokeSource.BOOKMARK_BUTTON);
+            }
         }
 
         @Override
@@ -291,13 +317,13 @@ public class PageFragment extends Fragment implements BackPressedHandler {
         refreshView.setScrollableChild(webView);
         refreshView.setOnRefreshListener(pageRefreshListener);
 
-        tabLayout = (TabLayout) rootView.findViewById(R.id.page_actions_tab_layout);
+        tabLayout = (ConfigurableTabLayout) rootView.findViewById(R.id.page_actions_tab_layout);
         tabLayout.addOnTabSelectedListener(pageActionTabListener);
 
         PageActionToolbarHideHandler pageActionToolbarHideHandler = new PageActionToolbarHideHandler(tabLayout);
         pageActionToolbarHideHandler.setScrollView(webView);
 
-        errorView = (WikiErrorView)rootView.findViewById(R.id.page_error);
+        errorView = (WikiErrorView) rootView.findViewById(R.id.page_error);
 
         return rootView;
     }
@@ -343,13 +369,22 @@ public class PageFragment extends Fragment implements BackPressedHandler {
         errorView.setRetryClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (callback() != null) {
+                    callback().onPageLoadErrorRetry();
+                }
                 refreshPage();
             }
         });
         errorView.setBackClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                boolean back = onBackPressed();
+
+                // Needed if we're coming from another activity or fragment
+                if (!back && callback() != null) {
+                    // noinspection ConstantConditions
+                    callback().onPageLoadErrorBackPressed();
+                }
             }
         });
 
@@ -624,6 +659,7 @@ public class PageFragment extends Fragment implements BackPressedHandler {
 
         errorState = false;
         errorView.setVisibility(View.GONE);
+        tabLayout.enableAllTabs();
 
         model.setTitle(title);
         model.setTitleOriginal(title);
@@ -886,51 +922,30 @@ public class PageFragment extends Fragment implements BackPressedHandler {
 
         if (pageRefreshed) {
             pageRefreshed = false;
-            FeedbackUtil.showError(getActivity(), caught);
         }
 
         hidePageContent();
         errorView.setError(caught);
         errorView.setVisibility(View.VISIBLE);
-        if (getActivity() != null) {
-            refreshView.setEnabled(ThrowableUtil.isRetryable(getActivity(), caught));
-        }
+
+        View contentTopOffset = errorView.findViewById(R.id.view_wiki_error_article_content_top_offset);
+        View tabLayoutOffset = errorView.findViewById(R.id.view_wiki_error_article_tab_layout_offset);
+        contentTopOffset.setLayoutParams(getContentTopOffsetParams(getContext()));
+        contentTopOffset.setVisibility(View.VISIBLE);
+        tabLayoutOffset.setLayoutParams(getTabLayoutOffsetParams());
+        tabLayoutOffset.setVisibility(View.VISIBLE);
+
+        disableActionTabs(caught);
+
+        refreshView.setEnabled(!ThrowableUtil.is404(getContext(), caught));
         errorState = true;
+        if (callback() != null) {
+            callback().onPageLoadError(getTitle());
+        }
 
         if (getPageLoadCallbacks() != null) {
             getPageLoadCallbacks().onLoadError(caught);
         }
-    }
-
-    /**
-     * Read URL mappings from the saved page specific file
-     */
-    public void readUrlMappings() {
-        new LoadSavedPageUrlMapTask(model.getTitle()) {
-            @Override
-            public void onFinish(JSONObject result) {
-                // have we been unwittingly detached from our Activity?
-                if (!isAdded()) {
-                    L.d("Detached from activity, so stopping update.");
-                    return;
-                }
-
-                ImageUrlHtmlParser.replaceImageSources(bridge, result);
-            }
-
-            @Override
-            public void onCatch(Throwable e) {
-                if (!isAdded()) {
-                    return;
-                }
-                /*
-                If anything bad happens during loading of a saved page, then simply bounce it
-                back to the online version of the page, and re-save the page contents locally when it's done.
-                 */
-                L.d(e);
-                refreshPage();
-            }
-        }.execute();
     }
 
     public void refreshPage() {
@@ -940,6 +955,7 @@ public class PageFragment extends Fragment implements BackPressedHandler {
         }
 
         errorView.setVisibility(View.GONE);
+        tabLayout.enableAllTabs();
         errorState = false;
 
         model.setCurEntry(new HistoryEntry(model.getTitle(), HistoryEntry.SOURCE_HISTORY));
@@ -986,6 +1002,7 @@ public class PageFragment extends Fragment implements BackPressedHandler {
     }
 
     private void setBookmarkIconForPageSavedState(boolean pageSaved) {
+        pageSavedToList = pageSaved;
         TabLayout.Tab bookmarkTab
                 = tabLayout.getTabAt(PageActionTab.ADD_TO_READING_LIST.code());
         if (bookmarkTab != null) {
@@ -1426,6 +1443,23 @@ public class PageFragment extends Fragment implements BackPressedHandler {
                 model.getCurEntry().getSource(),
                 timeSpentSec));
         new UpdateHistoryTask(model.getCurEntry(), app).execute();
+    }
+
+    private LinearLayout.LayoutParams getContentTopOffsetParams(@NonNull Context context) {
+        return new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, getContentTopOffsetPx(context));
+    }
+
+    private LinearLayout.LayoutParams getTabLayoutOffsetParams() {
+        return new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, tabLayout.getHeight());
+    }
+
+    private void disableActionTabs(@Nullable Throwable caught) {
+        boolean offline = caught != null && isOffline(caught);
+        for (int i = 0; i < tabLayout.getTabCount(); i++) {
+            if (!(offline && PageActionTab.of(i).equals(PageActionTab.ADD_TO_READING_LIST))) {
+                tabLayout.disableTab(i);
+            }
+        }
     }
 
     @Nullable

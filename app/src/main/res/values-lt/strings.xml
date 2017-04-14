@@ -46,10 +46,9 @@
   <string name="langlinks_empty">Šis puslapis nėra išverstas į kitas kalbas.</string>
   <string name="langlinks_no_match">Nerasta kalbų, atitinkančių jūsų užklausą.</string>
   <string name="langlinks_activity_title">Kitos kalbos</string>
-  <string name="menu_save_changes">Įrašyti pakeitimus</string>
-  <string name="edit_section_error_retry">Bandyti dar kartą</string>
-  <string name="dialog_saving_in_progress">Įrašoma…</string>
-  <string name="edit_saved_successfully">Redagavimas įrašytas!</string>
+  <string name="menu_save_changes">Paskelbti Pakeitimus</string>
+  <string name="dialog_saving_in_progress">Skelbiama...</string>
+  <string name="edit_saved_successfully">Redagavimas paskelbtas!</string>
   <string name="dialog_message_edit_failed">Redaguoti nepavyko!</string>
   <string name="dialog_message_edit_failed_retry">Bandyti dar kartą</string>
   <string name="dialog_message_edit_failed_cancel">Atšaukti</string>
@@ -58,6 +57,9 @@
   <string name="dialog_message_leaving_edit_stay">Likti</string>
   <string name="menu_show_toc">Turinys</string>
   <string name="search_no_results_found">Rezultatų nerasta</string>
+  <string name="search_reading_list_no_results">Nerasta rezultatų „%s“</string>
+  <string name="search_reading_lists_no_results">Nerasta rezultatų skaitymo sąrašuose</string>
+  <string name="search_history_no_results">Istorijoje rezultatų nerasta</string>
   <string name="edit_section_captcha_hint">Pakartoti žodžius iš viršaus</string>
   <string name="title_captcha">Įveskite saugos kodą</string>
   <string name="edit_section_captcha_reload">Bakstelėkite CAPTCHA, kad atnaujinti</string>
@@ -70,7 +72,7 @@
   <string name="login_success_toast">Sėkmingai prisijungėte!</string>
   <string name="preference_title_logout">Atsijungti</string>
   <string name="toast_logout_complete">Atsijungėte</string>
-  <string name="history_empty_title" fuzzy="true">Naujausių puslapių nėra!</string>
+  <string name="history_empty_title">Nėra neseniai peržiūrėtų straipsnių</string>
   <string name="history_empty_message" fuzzy="true">Tikriausiai viską panaikinote. Kitą kartą, kai eisite į kurį nors puslapį, iš čia galėsite į jį sugrįžti.</string>
   <string name="delete_selected_history">Naikinti</string>
   <string name="delete_selected_items">Ištrinti pasirinktus elementus</string>
@@ -132,7 +134,7 @@
   <string name="user_anon_blocked_from_editing">Jūsų IP adresas yra užblokuotas nuo redagavimo.</string>
   <string name="edit_how_page_improved">Kaip pagerinote puslapį?</string>
   <string name="edit_next">Kitas</string>
-  <string name="edit_done">Įrašyti</string>
+  <string name="edit_done">Paskelbti</string>
   <string name="edit_preview">Peržiūra</string>
   <string name="edit_summary_tag_typo">Pataisyta klaida</string>
   <string name="edit_summary_tag_grammar">Pataisyta gramatika</string>
@@ -141,6 +143,7 @@
   <string name="edit_summary_tag_other_hint">Kiti būdai, kaip galite pagerinti puslapį</string>
   <string name="find_next">Rasti kitą</string>
   <string name="find_previous">Rasti ankstesnį</string>
+  <string name="abusefilter_title_warn">Panašu, kad šie pakeitimai nekonstruktyvūs. Ar tikrai norite juos paskelbti?</string>
   <string name="abusefilter_title_disallow">Jūs negalite išsaugoti šio keitimo. Prašome grįžti atgal ir pakeisti jį.</string>
   <string name="dialog_page_issues">Puslapio klausimai</string>
   <string name="button_page_issues">Puslapio klausimai</string>
@@ -198,6 +201,9 @@
   <string name="address_copied">Adresas kopijuotas į mainų sritį.</string>
   <string name="text_copied">Tekstas nukopijuotas į iškarpinę.</string>
   <string name="button_continue_to_article">Skaityti straipsnį</string>
+  <string name="button_add_to_reading_list">Įtraukti į skaitymo sąrašą</string>
+  <string name="page_offline_notice_cannot_load_while_offline">Neprisijungus, įrašas negali būti įkeltas.</string>
+  <string name="page_offline_notice_add_to_reading_list">Pridėkite straipsnį prie skaitomų sąrašo ir jis bus pakrautas kai vėl prisijungsite.</string>
   <string name="button_get_directions">Gauti kryptis</string>
   <string name="error_no_maps_app">Nepavyko rasti jokių programėlių, kurios suteikia kryptis.</string>
   <string name="preference_title_show_link_previews">Rodyti nuorodos peržiūras</string>
@@ -206,6 +212,13 @@
   <string name="error_voice_search_not_available">Atsiprašome, balso atpažinimas negalimas.</string>
   <string name="location_service_disabled">Vietos paslaugos yra išjungtos.</string>
   <string name="enable_location_service">Įjungti</string>
+  <string name="location_permissions_enable_prompt">Įjunkite vietovės teises, kad matytumėte vietas šalia savęs.</string>
+  <string name="location_permissions_enable_action">Įjungti</string>
+  <string name="multi_select_items_selected">%d pasirinkta</string>
+  <string name="error_message_generic">Įvyko klaida</string>
+  <string name="view_link_preview_error_button_dismiss">Atšaukti</string>
+  <string name="error_page_does_not_exist">Šis puslapis neekzistuoja</string>
+  <string name="view_wiki_error_message_offline">Nepavyko prisijungti prie interneto</string>
   <string name="crash_report_dialog_title">Atleiskite, programėlė praeitą kartą užlūžo</string>
   <string name="crash_report_dialog_dont_send_button">Praleisti</string>
   <string name="crash_report_dialog_always_send_button">Siųsti visada</string>
@@ -236,11 +249,14 @@ Norėtumėte pradėti iš naujo ar baigti?</string>
   <string name="reading_list_sort_by_name_desc">Rūšiuoti pagal pavadinimą (atvirkščiai)</string>
   <string name="reading_list_sort_by_recent">Rūšiuoti pagal naujausius</string>
   <string name="reading_list_sort_by_recent_desc">Rūšiuoti pagal seniausius</string>
-  <string name="reading_list_menu_delete" fuzzy="true">Ištrinti skaitymo sąrašą</string>
+  <string name="reading_list_menu_delete">Ištrinti sąrašą</string>
+  <string name="reading_list_menu_rename">Pervadinti</string>
+  <string name="reading_list_menu_edit_description">Redaguoti aprašymą</string>
   <string name="reading_list_name_sample">Mano skaitymo sąrašas</string>
   <string name="reading_list_name_hint">Sąrašo pavadinimas</string>
   <string name="reading_list_description_hint">Aprašymas (neprivalomas):</string>
   <string name="reading_list_item_deleted">%s pašalintas iš sąrašo</string>
+  <string name="reading_list_items_deleted">%d straipsnių pašalinta iš sąrašo</string>
   <string name="reading_list_item_delete_undo">Anuliuoti</string>
   <string name="reading_list_deleted">%s ištrintas</string>
   <string name="reading_lists_empty">Dar nėra skaitymo sąrašų</string>
@@ -250,6 +266,11 @@ Norėtumėte pradėti iš naujo ar baigti?</string>
   <string name="reading_lists_onboarding_example3">Kosmosas!</string>
   <string name="reading_lists_onboarding_got_it">Supratau</string>
   <string name="reading_list_no_description">Nėra aprašymo...</string>
+  <string name="reading_list_empty">Neturite pridėtų į sąrašą straipsnių.</string>
+  <string name="reading_list_article_make_offline">Versti šį straipsnį būti prieinamam neprisijungus</string>
+  <string name="reading_list_article_remove_offline">Neversti šio straipsnio prieinamu neprisijungus</string>
+  <string name="reading_list_article_offline_message">Šis straipsnis dabar bus prieinamas neprisijungus.</string>
+  <string name="reading_list_article_not_offline_message">Šis straipsnis nebebus prieinamas neprisijungus.</string>
   <string name="user_option_sync_label">Nustatymai</string>
   <string name="notification_button_view_user">Kalbėti su vartotoju</string>
   <string name="notification_talk_title">Nauja žinutė Vikipedijoje</string>
@@ -278,13 +299,13 @@ Norėtumėte pradėti iš naujo ar baigti?</string>
   <string name="view_continue_reading_card_subtitle_today">Šiandien</string>
   <string name="view_announcement_card_negative_action">Ne, ačiū</string>
   <string name="description_edit_text_hint" fuzzy="true">Parašykite aprašymą!</string>
-  <string name="description_edit_save">Išsaugoti</string>
+  <string name="description_edit_save">Paskelbti</string>
   <string name="description_edit_add_description" fuzzy="true">Pridėti trumpą aprašymą</string>
   <string name="description_edit_edit_description">Redaguoti aprašymą</string>
   <string name="description_edit_cancel_hint">Atšaukti</string>
   <string name="description_edit_help_about_wikidata">Apie Vikiduomenis</string>
   <string name="description_edit_help_wikidata_guide">Vikiduomenų gidas aprašymų rašymui</string>
-  <string name="description_edit_success_saved">Aprašymas išsaugotas!</string>
+  <string name="description_edit_success_saved">Aprašymas paskelbtas!</string>
   <string name="description_edit_success_encouragement">Jūs ką tik padarėte Vikipediją geresne visiems</string>
   <string name="description_edit_success_done">Atlikta</string>
   <string name="description_edit_success_did_you_know">Ar žinote?</string>

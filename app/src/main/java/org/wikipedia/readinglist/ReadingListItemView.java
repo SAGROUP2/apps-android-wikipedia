@@ -4,19 +4,20 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StyleRes;
+import android.support.v4.widget.TextViewCompat;
 import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import org.wikipedia.R;
@@ -100,9 +101,8 @@ public class ReadingListItemView extends FrameLayout {
         updateDetails();
     }
 
-    public void setTitleTextSize(@DimenRes int id) {
-        titleView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getContext().getResources().getDimension(id));
+    public void setTitleTextAppearance(@StyleRes int id) {
+        TextViewCompat.setTextAppearance(titleView, id);
     }
 
     @OnClick void onClick(View view) {
@@ -190,7 +190,8 @@ public class ReadingListItemView extends FrameLayout {
 
     private void loadThumbnail(@NonNull SimpleDraweeView view, @Nullable String url) {
         if (TextUtils.isEmpty(url)) {
-            view.getHierarchy().setFailureImage(R.drawable.ic_image_gray_24dp);
+            view.getHierarchy().setFailureImage(R.drawable.ic_image_gray_24dp,
+                    ScalingUtils.ScaleType.FIT_CENTER);
         } else {
             ViewUtil.loadImageUrlInto(view, url);
         }

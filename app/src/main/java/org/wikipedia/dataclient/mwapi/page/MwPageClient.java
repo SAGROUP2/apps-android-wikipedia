@@ -1,18 +1,15 @@
 package org.wikipedia.dataclient.mwapi.page;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import org.wikipedia.dataclient.ServiceError;
 import org.wikipedia.dataclient.page.PageClient;
-import org.wikipedia.dataclient.page.PageCombo;
 import org.wikipedia.dataclient.page.PageLead;
 import org.wikipedia.dataclient.page.PageRemaining;
 import org.wikipedia.dataclient.page.PageSummary;
 
-import java.io.IOException;
-
+import okhttp3.CacheControl;
 import retrofit2.Call;
-import retrofit2.Response;
 
 /**
  * Retrofit web service client for MediaWiki PHP API.
@@ -30,27 +27,22 @@ public class MwPageClient implements PageClient {
     }
 
     @SuppressWarnings("unchecked")
-    @NonNull @Override public Call<? extends PageLead> lead(@NonNull String title,
+    @NonNull @Override public Call<? extends PageLead> lead(@Nullable CacheControl cacheControl,
+                                                            @NonNull CacheOption cacheOption,
+                                                            @NonNull String title,
                                                             int leadThumbnailWidth,
                                                             boolean noImages) {
-        return service.lead(title, leadThumbnailWidth, optional(noImages));
+        return service.lead(cacheControl == null ? null : cacheControl.toString(),
+                optional(cacheOption.save()), title, leadThumbnailWidth, optional(noImages));
     }
 
     @SuppressWarnings("unchecked")
-    @NonNull @Override public Call<? extends PageRemaining> sections(@NonNull String title,
+    @NonNull @Override public Call<? extends PageRemaining> sections(@Nullable CacheControl cacheControl,
+                                                                     @NonNull CacheOption cacheOption,
+                                                                     @NonNull String title,
                                                                      boolean noImages) {
-        return service.sections(title, optional(noImages));
-    }
-
-    @Override public PageCombo pageCombo(String title, boolean noImages) throws IOException {
-        Response<MwMobileViewPageCombo> rsp = service.pageCombo(title, optional(noImages)).execute();
-        if (!rsp.body().hasError()) {
-            return rsp.body();
-        }
-        ServiceError err = rsp.body() == null || rsp.body().getError() == null
-                ? null
-                : rsp.body().getError();
-        throw new IOException(err == null ? rsp.message() : err.getDetails());
+        return service.sections(cacheControl == null ? null : cacheControl.toString(),
+                optional(cacheOption.save()), title, optional(noImages));
     }
 
     /**

@@ -1,9 +1,9 @@
 package org.wikipedia.dataclient.page;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import java.io.IOException;
-
+import okhttp3.CacheControl;
 import retrofit2.Call;
 
 /**
@@ -12,6 +12,20 @@ import retrofit2.Call;
  * getting to the data (MW API and RESTBase) we add this layer of indirection -- until we drop one.
  */
 public interface PageClient {
+    enum CacheOption {
+        /** Request transient app caching; if the response is already cached in permanent storage,
+            it will be refreshed regardless */
+        CACHE,
+
+        /** Request persistent app caching; if headers permit the response to be cached, it will be
+            saved to the permanent cache */
+        SAVE;
+
+        public boolean save() {
+            return this == SAVE;
+        }
+    }
+
     /**
      * Gets a page summary for a given title -- for link previews
      *
@@ -26,7 +40,10 @@ public interface PageClient {
      * @param leadThumbnailWidth one of the bucket widths for the lead image
      * @param noImages add the noimages flag to the request if true
      */
-    @NonNull <T extends PageLead> Call<T> lead(@NonNull String title, int leadThumbnailWidth,
+    @NonNull <T extends PageLead> Call<T> lead(@Nullable CacheControl cacheControl,
+                                               @NonNull CacheOption cacheOption,
+                                               @NonNull String title,
+                                               int leadThumbnailWidth,
                                                boolean noImages);
 
     /**
@@ -35,15 +52,8 @@ public interface PageClient {
      * @param title the page title to be used including prefix
      * @param noImages add the noimages flag to the request if true
      */
-    @NonNull <T extends PageRemaining> Call<T> sections(@NonNull String title, boolean noImages);
-
-    /**
-     * Gets all page content of a given title.  Used in the saved page sync background service.
-     * Synchronous call.
-     *
-     * @param title the page title to be used including prefix
-     * @param noImages add the noimages flag to the request if true
-     * @throws IOException when the request did not succeed
-     */
-    PageCombo pageCombo(String title, boolean noImages) throws IOException;
+    @NonNull <T extends PageRemaining> Call<T> sections(@Nullable CacheControl cacheControl,
+                                                        @NonNull CacheOption cacheOption,
+                                                        @NonNull String title,
+                                                        boolean noImages);
 }
