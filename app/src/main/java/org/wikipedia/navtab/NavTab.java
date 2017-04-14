@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import org.wikipedia.R;
 import org.wikipedia.feed.FeedFragment;
 import org.wikipedia.history.HistoryFragment;
+import org.wikipedia.learn.LearnFragment;
 import org.wikipedia.model.EnumCode;
 import org.wikipedia.model.EnumCodeMap;
 import org.wikipedia.nearby.NearbyFragment;
@@ -32,6 +33,11 @@ public enum NavTab implements EnumCode {
     NEARBY(R.string.nav_item_nearby, R.drawable.ic_explore_black_24dp) {
         @NonNull @Override public Fragment newInstance() {
             return NearbyFragment.newInstance();
+        }
+    },
+    LEARN(R.string.nav_item_learn, R.drawable.ic_school_black_24dp) {
+        @NonNull @Override public Fragment newInstance() {
+            return LearnFragment.newInstance();
         }
     };
 
