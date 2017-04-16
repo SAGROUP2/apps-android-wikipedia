@@ -14,7 +14,6 @@
     <string name="search_hint_search_my_lists">Search my lists</string>
     <string name="search_hint_search_reading_list">Search reading list</string>
     <string name="nav_item_history">History</string>
-    <string name="nav_item_learn">Learn</string>
     <string name="error_network_error">Cannot connect to the Internet.</string>
     <string name="page_error_retry">Retry</string>
     <string name="page_error_back_to_main">Go back</string>
