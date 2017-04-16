@@ -7,4 +7,6 @@
         android:title="@string/reading_list_menu_edit_description"/>
     <item android:id="@+id/menu_reading_list_delete"
         android:title="@string/reading_list_menu_delete"/>
+    <item android:id="@+id/menu_reading_list_learn"
+        android:title="@string/reading_list_menu_learn"/>
 </menu>
