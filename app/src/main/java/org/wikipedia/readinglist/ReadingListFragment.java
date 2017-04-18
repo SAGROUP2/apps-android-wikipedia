@@ -189,16 +189,9 @@ public class ReadingListFragment extends Fragment implements ReadingListPageObse
             case R.id.menu_reading_list_delete:
                 delete();
                 return true;
-            case R.id.menu_reading_list_learn:
-                learn();
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void learn() {
-        // TODO: create notification or something
     }
 
     @Override public void onReadingListPageStatusChanged() {
