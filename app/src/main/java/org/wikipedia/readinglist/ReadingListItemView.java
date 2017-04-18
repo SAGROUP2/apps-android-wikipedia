@@ -1,7 +1,10 @@
 package org.wikipedia.readinglist;
 
 import android.annotation.TargetApi;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -22,6 +25,8 @@ import com.facebook.drawee.view.SimpleDraweeView;
 
 import org.wikipedia.R;
 import org.wikipedia.views.ViewUtil;
+
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -218,10 +223,30 @@ public class ReadingListItemView extends FrameLayout {
                         return true;
                     }
                     break;
+                case R.id.menu_reading_list_learn:
+                    learn();
+                    return true;
                 default:
                     break;
             }
             return false;
         }
+    }
+
+    private void learn() {
+        Context context = this.getContext();
+        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, LearnNotification.class);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        // TODO: calendar to set preferred notification time
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTimeInMillis(System.currentTimeMillis());
+//        calendar.set(Calendar.HOUR_OF_DAY, 8);
+//        calendar.set(Calendar.MINUTE, 30);
+
+        // alarm after 10 seconds (for testing purposes) and then every 24 hours
+        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP,  System.currentTimeMillis() + 10*1000/*calendar.getTimeInMillis()*/,
+                24*60*60*1000, alarmIntent);
     }
 }

@@ -244,6 +244,12 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".readinglist.LearnNotification"
+            android:enabled="true"
+            android:exported="false" >
+        </receiver>
+
         <service
             android:name=".useroption.sync.UserOptionSyncService"
             android:exported="false">
