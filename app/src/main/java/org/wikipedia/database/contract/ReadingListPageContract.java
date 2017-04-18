@@ -59,6 +59,7 @@ public final class ReadingListPageContract {
         LongColumn ATIME = new LongColumn(TABLE_PAGE, "atime", "integer not null");
         StrColumn THUMBNAIL_URL = new StrColumn(TABLE_PAGE, "thumbnailUrl", "text");
         StrColumn DESCRIPTION = new StrColumn(TABLE_PAGE, "description", "text");
+        IntColumn IS_VIEWED = new IntColumn(TABLE_PAGE, "isViewed", "integer default 0");
 
         String[] SELECTION = DbUtil.qualifiedNames(KEY);
         String[] ALL = DbUtil.qualifiedNames(ID, KEY, LIST_KEYS, SITE, LANG, NAMESPACE, TITLE,

@@ -33,6 +33,7 @@ public class ReadingListPageRow extends BaseModel {
     private long atime;
     @Nullable private String thumbnailUrl;
     @Nullable private String description;
+    private Integer isViewed;
 
     public static Builder<?> builder() {
         //noinspection rawtypes
@@ -102,6 +103,10 @@ public class ReadingListPageRow extends BaseModel {
         return description;
     }
 
+    public Integer isViewed() {
+        return isViewed;
+    }
+
     protected ReadingListPageRow(@NonNull Builder<?> builder) {
         key = builder.key;
         listKeys = new ArraySet<>(builder.listKeys);
@@ -113,6 +118,7 @@ public class ReadingListPageRow extends BaseModel {
         atime = builder.atime;
         thumbnailUrl = builder.thumbnailUrl;
         description = builder.description;
+        isViewed = builder.isViewed;
     }
 
     @SuppressWarnings("unchecked")
@@ -127,6 +133,7 @@ public class ReadingListPageRow extends BaseModel {
         private Long atime;
         private String thumbnailUrl;
         private String description;
+        private Integer isViewed;
 
         public Clazz copy(@NonNull ReadingListPageRow copy) {
             return key(copy.key)
@@ -137,7 +144,8 @@ public class ReadingListPageRow extends BaseModel {
                     .mtime(copy.mtime)
                     .atime(copy.atime)
                     .thumbnailUrl(copy.thumbnailUrl)
-                    .description(copy.description);
+                    .description(copy.description)
+                    .isViewed(copy.isViewed);
         }
 
         public Clazz key(@NonNull String key) {
@@ -193,6 +201,11 @@ public class ReadingListPageRow extends BaseModel {
 
         public Clazz description(@Nullable String description) {
             this.description = description;
+            return (Clazz) this;
+        }
+
+        public Clazz isViewed(Integer isViewed) {
+            this.isViewed = isViewed;
             return (Clazz) this;
         }
 

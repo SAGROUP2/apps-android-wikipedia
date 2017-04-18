@@ -36,6 +36,7 @@ public class ReadingListPageTable extends DatabaseTable<ReadingListPageRow> {
                 .atime(PageCol.ATIME.val(cursor))
                 .thumbnailUrl(PageCol.THUMBNAIL_URL.val(cursor))
                 .description(PageCol.DESCRIPTION.val(cursor))
+                .isViewed(PageCol.IS_VIEWED.val(cursor))
                 .build();
     }
 
@@ -55,6 +56,7 @@ public class ReadingListPageTable extends DatabaseTable<ReadingListPageRow> {
                 cols.add(PageCol.ATIME);
                 cols.add(PageCol.THUMBNAIL_URL);
                 cols.add(PageCol.DESCRIPTION);
+                cols.add(PageCol.IS_VIEWED);
                 return cols.toArray(new Column<?>[cols.size()]);
             default:
                 return super.getColumnsAdded(version);
@@ -74,6 +76,7 @@ public class ReadingListPageTable extends DatabaseTable<ReadingListPageRow> {
         contentValues.put(PageCol.ATIME.getName(), row.atime());
         contentValues.put(PageCol.THUMBNAIL_URL.getName(), row.thumbnailUrl());
         contentValues.put(PageCol.DESCRIPTION.getName(), row.description());
+        contentValues.put(PageCol.IS_VIEWED.getName(), row.isViewed());
         return contentValues;
     }
 
