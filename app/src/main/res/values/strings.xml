@@ -306,6 +306,7 @@
     <string name="reading_list_menu_delete">Delete list</string>
     <string name="reading_list_menu_rename">Rename</string>
     <string name="reading_list_menu_learn">Learn list</string>
+    <string name="reading_list_learn_time_set">Time has been set</string>
     <string name="reading_list_menu_edit_description">Edit description</string>
     <string name="reading_list_name_sample">My reading list</string>
     <string name="reading_list_name_hint">Name of this list</string>
