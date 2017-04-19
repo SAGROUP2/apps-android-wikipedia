@@ -54,6 +54,7 @@ public interface ReadingListContract {
         public static final LongColumn PAGE_ATIME = ReadingListPageContract.PageCol.ATIME;
         public static final StrColumn PAGE_THUMBNAIL_URL = ReadingListPageContract.PageCol.THUMBNAIL_URL;
         public static final StrColumn PAGE_DESCRIPTION = ReadingListPageContract.PageCol.DESCRIPTION;
+        public static final IntColumn PAGE_IS_VIEWED = ReadingListPageContract.PageCol.IS_VIEWED;
 
         public static final StrColumn PAGE_DISK_KEY = ReadingListPageContract.DiskCol.KEY;
         public static final CodeEnumColumn<DiskStatus> PAGE_DISK_STATUS = ReadingListPageContract.DiskCol.STATUS;
