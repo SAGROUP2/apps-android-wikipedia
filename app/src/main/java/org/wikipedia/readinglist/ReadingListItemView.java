@@ -270,6 +270,7 @@ public class ReadingListItemView extends FrameLayout {
             calendar.setTimeInMillis(System.currentTimeMillis());
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
             calendar.set(Calendar.MINUTE, minute);
+            calendar.set(Calendar.SECOND, 0);
 
             alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                     24*60*60*1000, alarmIntent);
