@@ -26,11 +26,13 @@ public class LearnNotification extends BroadcastReceiver {
         DatabaseClient<ReadingListPageRow> client = WikipediaApp.getInstance().getDatabaseClient(ReadingListPageRow.class);
         Cursor c = client.select(ReadingListPageContract.PageWithDisk.URI, null, null, null);
         PageTitle title = null;
+        String pageKey = null;
         try {
             if (c.getCount() > 0) {
                 while (c.moveToNext()) {
                     if (c.getInt(c.getColumnIndex("isViewed")) == 0) {
                         title = ReadingListDaoProxy.pageTitle(ReadingListPage.fromCursor(c));
+                        pageKey = c.getString(c.getColumnIndex("key"));
                         break;
                     }
                 }
@@ -48,8 +50,9 @@ public class LearnNotification extends BroadcastReceiver {
                             .setAutoCancel(true);
 
             HistoryEntry entry = new HistoryEntry(title, HistoryEntry.SOURCE_READING_LIST);
-            Intent resultIntent = PageActivity.newIntent(context, entry, entry.getTitle());
-
+            Intent resultIntent = PageActivity.newIntent(context, entry, entry.getTitle())
+                    .putExtra(PageActivity.FLAG_FROM_NOTIFICATION, true)
+                    .putExtra(PageActivity.PAGE_KEY_FROM_NOTIFICATION, pageKey);
 
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(context)
                     .addParentStack(ReadingListActivity.class)

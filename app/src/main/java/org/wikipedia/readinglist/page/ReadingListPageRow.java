@@ -99,6 +99,10 @@ public class ReadingListPageRow extends BaseModel {
         this.description = description;
     }
 
+    public void setIsViewed(int isViewed) {
+        this.isViewed = isViewed;
+    }
+
     @Nullable public String description() {
         return description;
     }

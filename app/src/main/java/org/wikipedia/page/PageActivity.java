@@ -56,6 +56,8 @@ import org.wikipedia.page.snippet.CompatActionMode;
 import org.wikipedia.page.tabs.TabsProvider;
 import org.wikipedia.page.tabs.TabsProvider.TabPosition;
 import org.wikipedia.readinglist.AddToReadingListDialog;
+import org.wikipedia.readinglist.page.ReadingListPage;
+import org.wikipedia.readinglist.page.database.ReadingListPageDao;
 import org.wikipedia.search.SearchFragment;
 import org.wikipedia.search.SearchInvokeSource;
 import org.wikipedia.settings.SettingsActivity;
@@ -86,6 +88,8 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
     public static final String ACTION_RESUME_READING = "org.wikipedia.resume_reading";
     public static final String EXTRA_PAGETITLE = "org.wikipedia.pagetitle";
     public static final String EXTRA_HISTORYENTRY  = "org.wikipedia.history.historyentry";
+    public static final String FLAG_FROM_NOTIFICATION = "FLAG_FROM_NOTIFICATION";
+    public static final String PAGE_KEY_FROM_NOTIFICATION = "PAGE_KEY_FROM_NOTIFICATION";
 
     private static final String LANGUAGE_CODE_BUNDLE_KEY = "language";
 
@@ -169,6 +173,14 @@ public class PageActivity extends ThemedActionBarActivity implements PageFragmen
             // Note: when system language is enabled, and the system language is changed outside of
             // the app, MRU languages are not updated. There's no harm in doing that here but since
             // the user didin't choose that language in app, it may be unexpected.
+        }
+
+        Intent intent = getIntent();
+        if (intent.getBooleanExtra(FLAG_FROM_NOTIFICATION, false)) {
+            String pageKey = intent.getStringExtra(PAGE_KEY_FROM_NOTIFICATION);
+            ReadingListPage page = ReadingListPageDao.instance().findPage(pageKey);
+            page.setIsViewed(1);
+            ReadingListPageDao.instance().upsert(page);
         }
 
         if (languageChanged) {
