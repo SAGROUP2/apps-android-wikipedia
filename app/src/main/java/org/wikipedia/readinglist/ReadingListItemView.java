@@ -242,6 +242,9 @@ public class ReadingListItemView extends FrameLayout {
     }
 
     private void learn() {
+        readingList.isLearned(1);
+        ReadingListData.instance().saveListInfo(readingList);
+
         DialogFragment newFragment = new TimePickerFragment();
         newFragment.show(((FragmentActivity)this.getContext()).getSupportFragmentManager(), "timePicker");
     }
