@@ -12,7 +12,7 @@ import android.support.v4.app.TaskStackBuilder;
 import org.wikipedia.R;
 import org.wikipedia.WikipediaApp;
 import org.wikipedia.database.DatabaseClient;
-import org.wikipedia.database.contract.ReadingListPageContract;
+import org.wikipedia.database.contract.ReadingListContract;
 import org.wikipedia.history.HistoryEntry;
 import org.wikipedia.page.PageActivity;
 import org.wikipedia.page.PageTitle;
@@ -24,7 +24,7 @@ public class LearnNotification extends BroadcastReceiver {
 
     public void onReceive(Context context, Intent intent) {
         DatabaseClient<ReadingListPageRow> client = WikipediaApp.getInstance().getDatabaseClient(ReadingListPageRow.class);
-        Cursor c = client.select(ReadingListPageContract.PageWithDisk.URI, null, null, null);
+        Cursor c = client.select(ReadingListContract.LearningLists.URI, null, null, null);
         PageTitle title = null;
         String pageKey = null;
         try {

@@ -61,7 +61,10 @@ public enum AppContentProviderEndpoint implements EnumCode {
             ReadingListContract.List.PROJECTION),
     READING_LIST_WITH_PAGES_AND_DISK(407, ReadingListContract.ListWithPagesAndDisk.PATH,
             ReadingListContract.ListWithPagesAndDisk.TABLES,
-            ReadingListContract.ListWithPagesAndDisk.PROJECTION);
+            ReadingListContract.ListWithPagesAndDisk.PROJECTION),
+    READING_LIST_LEARNED(408, ReadingListContract.LearningLists.PATH,
+            ReadingListContract.LearningLists.TABLES,
+            ReadingListContract.LearningLists.PROJECTION);
 
     private static final EnumCodeMap<AppContentProviderEndpoint> CODE_TO_ENUM = new EnumCodeMap<>(AppContentProviderEndpoint.class);
     private static final UriMatcher URI_TO_CODE = newUriToCode();

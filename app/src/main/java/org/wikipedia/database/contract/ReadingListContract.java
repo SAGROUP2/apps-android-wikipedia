@@ -14,6 +14,10 @@ import org.wikipedia.readinglist.page.database.disk.DiskStatus;
 
 import java.util.Set;
 
+import static org.wikipedia.database.contract.ReadingListContract.ListWithPagesAndDisk.PAGE_DISK_KEY;
+import static org.wikipedia.database.contract.ReadingListContract.ListWithPagesAndDisk.PAGE_KEY;
+import static org.wikipedia.database.contract.ReadingListContract.ListWithPagesAndDisk.PAGE_LIST_KEYS;
+
 @SuppressWarnings("checkstyle:interfaceistype")
 public interface ReadingListContract {
     String TABLE = "readinglist";
@@ -29,6 +33,7 @@ public interface ReadingListContract {
 
         String[] SELECTION = DbUtil.qualifiedNames(KEY);
         String[] ALL = DbUtil.qualifiedNames(ID, KEY, TITLE, MTIME, ATIME, DESCRIPTION, IS_LEARNED);
+        String[] LEARNING = DbUtil.qualifiedNames(KEY, IS_LEARNED);
     }
 
     interface List extends Col {
@@ -86,5 +91,35 @@ public interface ReadingListContract {
         }
 
         private ListWithPagesAndDisk() { }
+    }
+
+    final class LearningLists implements List {
+        public static final String PATH = List.PATH + "/learning";
+        public static final Uri URI = Uri.withAppendedPath(AppContentProviderContract.AUTHORITY_BASE, PATH);
+
+        public static final String TABLES = (
+                ":tbl inner join :pageTbl on ((',' || :pageTbl.listKeysCol || ',') like ('%,' || :tbl.keyCol || ',%')) and (:tbl.isLearnedCol = 1) "
+                        + "inner join :diskTbl on :diskTbl.keyCol = :pageTbl.keyCol")
+                .replaceAll(":tbl.keyCol", KEY.qualifiedName())
+                .replaceAll(":tbl.isLearnedCol", IS_LEARNED.qualifiedName())
+                .replaceAll(":pageTbl.listKeysCol", PAGE_LIST_KEYS.qualifiedName())
+                .replaceAll(":diskTbl.keyCol", PAGE_DISK_KEY.qualifiedName())
+                .replaceAll(":pageTbl.keyCol", PAGE_KEY.qualifiedName())
+                .replaceAll(":tbl", TABLE)
+                .replaceAll(":pageTbl", ReadingListPageContract.TABLE_PAGE)
+                .replaceAll(":diskTbl", ReadingListPageContract.TABLE_DISK);
+
+        public static final String[] PROJECTION;
+        static {
+            PROJECTION = new String[LEARNING.length + ReadingListPageContract.PageCol.CONTENT.length + ReadingListPageContract.DiskCol.CONTENT.length];
+            System.arraycopy(LEARNING, 0, PROJECTION, 0, LEARNING.length);
+            System.arraycopy(ReadingListPageContract.PageCol.CONTENT, 0, PROJECTION, LEARNING.length,
+                    ReadingListPageContract.PageCol.CONTENT.length);
+            System.arraycopy(ReadingListPageContract.DiskCol.CONTENT, 0, PROJECTION,
+                    LEARNING.length + ReadingListPageContract.PageCol.CONTENT.length,
+                    ReadingListPageContract.DiskCol.CONTENT.length);
+        }
+
+        private LearningLists() { }
     }
 }
