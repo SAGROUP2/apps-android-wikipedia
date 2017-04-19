@@ -25,9 +25,10 @@ public interface ReadingListContract {
         LongColumn MTIME = new LongColumn(TABLE, "readingListMtime", "integer not null");
         LongColumn ATIME = new LongColumn(TABLE, "readingListAtime", "integer not null");
         StrColumn DESCRIPTION = new StrColumn(TABLE, "readingListDescription", "text");
+        IntColumn IS_LEARNED = new IntColumn(TABLE, "readingListIsLearned", "integer default 0");
 
         String[] SELECTION = DbUtil.qualifiedNames(KEY);
-        String[] ALL = DbUtil.qualifiedNames(ID, KEY, TITLE, MTIME, ATIME, DESCRIPTION);
+        String[] ALL = DbUtil.qualifiedNames(ID, KEY, TITLE, MTIME, ATIME, DESCRIPTION, IS_LEARNED);
     }
 
     interface List extends Col {

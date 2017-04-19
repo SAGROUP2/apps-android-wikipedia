@@ -17,6 +17,7 @@ public class ReadingListRow extends BaseModel {
     private final long mtime;
     private long atime;
     @Nullable private String description;
+    @NonNull private int isLearned;
 
     public static Builder<?> builder() {
         //noinspection rawtypes
@@ -56,12 +57,21 @@ public class ReadingListRow extends BaseModel {
         this.description = description;
     }
 
+    public int isLearned() {
+        return isLearned;
+    }
+
+    public void isLearned(int isLearned) {
+        this.isLearned = isLearned;
+    }
+
     protected ReadingListRow(@NonNull Builder<?> builder) {
         key = builder.key;
         title = builder.title;
         mtime = builder.mtime;
         atime = builder.atime;
         description = builder.description;
+        isLearned = builder.isLearned;
     }
 
     @SuppressWarnings("unchecked")
@@ -71,13 +81,15 @@ public class ReadingListRow extends BaseModel {
         private Long mtime;
         private Long atime;
         private String description;
+        private Integer isLearned;
 
         public Clazz copy(@NonNull ReadingListRow copy) {
             return key(copy.key)
                     .title(copy.title)
                     .mtime(copy.mtime)
                     .atime(copy.atime)
-                    .description(copy.description);
+                    .description(copy.description)
+                    .isLearned(copy.isLearned);
         }
 
         public Clazz key(@NonNull String key) {
@@ -102,6 +114,11 @@ public class ReadingListRow extends BaseModel {
 
         public Clazz description(@Nullable String description) {
             this.description = description;
+            return (Clazz) this;
+        }
+
+        public Clazz isLearned(@Nullable Integer isLearned) {
+            this.isLearned = isLearned;
             return (Clazz) this;
         }
 

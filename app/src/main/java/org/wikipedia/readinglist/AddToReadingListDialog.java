@@ -180,6 +180,7 @@ public class AddToReadingListDialog extends ExtendedBottomSheetDialogFragment {
                 .mtime(now)
                 .atime(now)
                 .description(null)
+                .isLearned(0)
                 .pages(new ArrayList<ReadingListPage>())
                 .build();
 

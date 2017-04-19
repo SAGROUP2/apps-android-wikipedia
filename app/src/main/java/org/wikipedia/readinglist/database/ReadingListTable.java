@@ -37,6 +37,7 @@ public class ReadingListTable extends DatabaseTable<ReadingListRow> {
                 .mtime(ReadingListContract.List.MTIME.val(cursor))
                 .atime(ReadingListContract.List.ATIME.val(cursor))
                 .description(ReadingListContract.List.DESCRIPTION.val(cursor))
+                .isLearned(ReadingListContract.List.IS_LEARNED.val(cursor))
                 .build();
     }
 
@@ -50,6 +51,7 @@ public class ReadingListTable extends DatabaseTable<ReadingListRow> {
                 cols.add(ReadingListContract.List.MTIME);
                 cols.add(ReadingListContract.List.ATIME);
                 cols.add(ReadingListContract.List.DESCRIPTION);
+                cols.add(ReadingListContract.List.IS_LEARNED);
                 return cols.toArray(new Column<?>[cols.size()]);
             default:
                 return super.getColumnsAdded(version);
@@ -71,6 +73,7 @@ public class ReadingListTable extends DatabaseTable<ReadingListRow> {
         contentValues.put(ReadingListContract.List.MTIME.getName(), row.mtime());
         contentValues.put(ReadingListContract.List.ATIME.getName(), row.atime());
         contentValues.put(ReadingListContract.List.DESCRIPTION.getName(), row.getDescription());
+        contentValues.put(ReadingListContract.List.IS_LEARNED.getName(), row.isLearned());
         return contentValues;
     }
 
