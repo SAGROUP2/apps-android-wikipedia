@@ -96,10 +96,6 @@ public class Page {
         return pageProperties;
     }
 
-    public boolean couldHaveReadMoreSection() {
-        return getTitle().namespace() == Namespace.MAIN;
-    }
-
     @Override public boolean equals(Object o) {
         if (!(o instanceof Page)) {
             return false;

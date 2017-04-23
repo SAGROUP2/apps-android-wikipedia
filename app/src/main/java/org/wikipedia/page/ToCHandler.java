@@ -39,13 +39,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import static org.wikipedia.util.DimenUtil.getContentTopOffsetPx;
-import static org.wikipedia.util.L10nUtil.getStringForArticleLanguage;
 import static org.wikipedia.util.ResourceUtil.getThemedAttributeId;
 
 public class ToCHandler {
     private static final int MAX_LEVELS = 3;
     private static final int INDENTATION_WIDTH_DP = 16;
-    private static final int READ_MORE_SECTION_ID = -1;
     private final ConfigurableListView tocList;
     private final ProgressBar tocProgress;
     private final CommunicationBridge bridge;
@@ -155,13 +153,7 @@ public class ToCHandler {
 
     public void scrollToSection(Section section) {
         if (section != null) {
-            // is it the bottom (read more) section?
-            if (section.getId() == READ_MORE_SECTION_ID) {
-                bridge.sendMessage("scrollToBottom", new JSONObject());
-            } else {
-                scrollToSection(
-                        section.isLead() ? "heading_" + section.getId() : section.getAnchor());
-            }
+            scrollToSection(section.isLead() ? "heading_" + section.getId() : section.getAnchor());
         }
     }
 
@@ -231,11 +223,6 @@ public class ToCHandler {
                 if (s.getLevel() < MAX_LEVELS && !s.isLead()) {
                     sections.add(s);
                 }
-            }
-            if (page.couldHaveReadMoreSection()) {
-                // add a fake section at the end to represent the "read more" contents at the bottom:
-                sections.add(new Section(READ_MORE_SECTION_ID, 0,
-                        getStringForArticleLanguage(page.getTitle(), R.string.read_more_section), "", ""));
             }
         }
 
